@@ -340,6 +340,23 @@ const StarChart = ({ parameter, view, setView }) => {
 
     const svgRef = useRef(null);
 
+    const handleResize = () => {
+        if (processedNormalizedData && processedData) {
+            drawChart(processedNormalizedData, processedData);
+        }
+    };
+
+    useEffect(() => {
+        // Add event listener for window resize
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [processedNormalizedData, processedData]);
+
+
     useEffect(() => {
         if (processedNormalizedData && processedData) {
           drawChart(processedNormalizedData, processedData);
@@ -348,8 +365,8 @@ const StarChart = ({ parameter, view, setView }) => {
 
     const drawChart = (normalizedData, data) => {
         d3.select(svgRef.current).selectAll("*").remove();
-        var svgWidth = 900;
-        var svgHeight = 600;
+        var svgWidth = window.innerWidth/(4/3);
+        var svgHeight = window.innerHeight/(4/3);
         var svg = d3.select(svgRef.current)
             .attr("width", svgWidth)
             .attr("height", svgHeight);
