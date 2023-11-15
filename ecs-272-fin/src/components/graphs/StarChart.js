@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import normalizeData from '../util/Normalizer';
 import getCorrectData from '../util/StarData';
+import { Button } from 'react-bootstrap';
 import {preProcessAncil1Data, preProcessAncil2Data, preProcessAncil3Data} from '../util/StarDataPreprocess';
 
 let rectangle;
@@ -46,7 +47,7 @@ function addListener(svg, data, keyText, className, view) {
                 selectedPolygon.remove();
                 selectedPolygon = null;
             });
-    } else if (view === 'overview_Instructions' || view === 'overview_Cycles' || view === 'overview_IPC' || view === 'overview_Seconds' || view === 'overview_Branches') {
+    } else if (view === 'overview-Instructions' || view === 'overview-Cycles' || view === 'overview-IPC' || view === 'overview-Seconds' || view === 'overview-Branches') {
         svg.selectAll(className)
         .on("mouseover", function (event, d) {
             rectangle.attr("stroke", "black");
@@ -303,6 +304,16 @@ const StarChart = ({ parameter, view, setView }) => {
         fetchData();
     }, [view]);
 
+    const goBack = () => {
+        const views = view.split("-");
+        if (views.length > 1) {
+            // Remove the last element to go back
+            views.pop();
+            const newView = views.join("-");
+            setView(newView);
+        }
+    };
+
     useEffect(() => {
         if (data.length > 0) {
             const normalizedData = normalizeData(data);
@@ -319,7 +330,7 @@ const StarChart = ({ parameter, view, setView }) => {
     if (view === 'overview') {
         processedData = preProcessAncil1Data(trimmedData);
         processedNormalizedData = preProcessAncil1Data(trimmedNormalizedData);
-    } else if (view === 'overview_Instructions' || view === 'overview_Cycles' || view === 'overview_IPC' || view === 'overview_Seconds' || view === 'overview_Branches') {
+    } else if (view === 'overview-Instructions' || view === 'overview-Cycles' || view === 'overview-IPC' || view === 'overview-Seconds' || view === 'overview-Branches') {
         processedData = preProcessAncil2Data(trimmedData);
         processedNormalizedData = preProcessAncil2Data(trimmedNormalizedData);
     } else if (view.includes('Control')|| view.includes('Memory') || view.includes('Execution') || view.includes('Data_Dependency') || view.includes('Store_Intense')) {
@@ -418,7 +429,7 @@ const StarChart = ({ parameter, view, setView }) => {
             .on("click", function (event) {
                 var clickedElement = d3.select(this).text();
                 clickedElement = clickedElement.split(" ").join("_");
-                setView(view+"_"+clickedElement);
+                setView(view+"-"+clickedElement);
             });
 
             var colorIndex = 0;
@@ -548,6 +559,7 @@ const StarChart = ({ parameter, view, setView }) => {
 
     return (
         <div>
+            <Button variant="primary" onClick={goBack}>Back</Button>
             {svgRef && (
                 <svg ref={svgRef} />
             )}
