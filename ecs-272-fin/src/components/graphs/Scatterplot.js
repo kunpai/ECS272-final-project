@@ -142,6 +142,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('transform', `translate(${width / 2},${height + margin.top + 10})`)
       .style('text-anchor', 'middle')
       .text('PC1')
+      .style("cursor", "pointer")
       .on('click', () => handleAxisLabelClick('PC1'));
 
     const yAxisLabel = svg
@@ -149,6 +150,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('transform', `translate(${-margin.left + 10},${height / 2}) rotate(-90)`)
       .style('text-anchor', 'middle')
       .text('PC2')
+      .style("cursor", "pointer")
       .on('click', () => handleAxisLabelClick('PC2'));
 
       const collapsedLegend = svg

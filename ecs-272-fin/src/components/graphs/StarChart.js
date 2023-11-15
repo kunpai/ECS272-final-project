@@ -20,6 +20,56 @@ const getCorrectData = async (view) => {
         return await readCSV('/data/seconds-stats.csv');
     } else if (view === 'overview_Branches') {
         return await readCSV('/data/branches-stats.csv');
+    } else if (view.includes('overview_Instructions') && view.includes('Control')) {
+        return await readCSV('/data/Control/Control-Instructions.csv');
+    } else if (view.includes('overview_Instructions') && view.includes('Memory')) {
+        return await readCSV('/data/Memory/Memory-Instructions.csv');
+    } else if (view.includes('overview_Instructions') && view.includes('Execution')) {
+        return await readCSV('/data/Execution/Execution-Instructions.csv');
+    } else if (view.includes('overview_Instructions') && view.includes('Data_Dependency')) {
+        return await readCSV('/data/Data_Dependency/Data_Dependency-Instructions.csv');
+    } else if (view.includes('overview_Instructions') && view.includes('Store_Intense')) {
+        return await readCSV('/data/Store_Intense/Store_Intense-Instructions.csv');
+    } else if (view.includes('overview_Cycles') && view.includes('Control')) {
+        return await readCSV('/data/Control/Control-Cycles.csv');
+    } else if (view.includes('overview_Cycles') && view.includes('Memory')) {
+        return await readCSV('/data/Memory/Memory-Cycles.csv');
+    } else if (view.includes('overview_Cycles') && view.includes('Execution')) {
+        return await readCSV('/data/Execution/Execution-Cycles.csv');
+    } else if (view.includes('overview_Cycles') && view.includes('Data_Dependency')) {
+        return await readCSV('/data/Data_Dependency/Data_Dependency-Cycles.csv');
+    } else if (view.includes('overview_Cycles') && view.includes('Store_Intense')) {
+        return await readCSV('/data/Store_Intense/Store_Intense-Cycles.csv');
+    } else if (view.includes('overview_IPC') && view.includes('Control')) {
+        return await readCSV('/data/Control/Control-IPC.csv');
+    } else if (view.includes('overview_IPC') && view.includes('Memory')) {
+        return await readCSV('/data/Memory/Memory-IPC.csv');
+    } else if (view.includes('overview_IPC') && view.includes('Execution')) {
+        return await readCSV('/data/Execution/Execution-IPC.csv');
+    } else if (view.includes('overview_IPC') && view.includes('Data_Dependency')) {
+        return await readCSV('/data/Data_Dependency/Data_Dependency-IPC.csv');
+    } else if (view.includes('overview_IPC') && view.includes('Store_Intense')) {
+        return await readCSV('/data/Store_Intense/Store_Intense-IPC.csv');
+    } else if (view.includes('overview_Seconds') && view.includes('Control')) {
+        return await readCSV('/data/Control/Control-Seconds.csv');
+    } else if (view.includes('overview_Seconds') && view.includes('Memory')) {
+        return await readCSV('/data/Memory/Memory-Seconds.csv');
+    } else if (view.includes('overview_Seconds') && view.includes('Execution')) {
+        return await readCSV('/data/Execution/Execution-Seconds.csv');
+    } else if (view.includes('overview_Seconds') && view.includes('Data_Dependency')) {
+        return await readCSV('/data/Data_Dependency/Data_Dependency-Seconds.csv');
+    } else if (view.includes('overview_Seconds') && view.includes('Store_Intense')) {
+        return await readCSV('/data/Store_Intense/Store_Intense-Seconds.csv');
+    } else if (view.includes('overview_Branches') && view.includes('Control')) {
+        return await readCSV('/data/Control/Control-Branches.csv');
+    } else if (view.includes('overview_Branches') && view.includes('Memory')) {
+        return await readCSV('/data/Memory/Memory-Branches.csv');
+    } else if (view.includes('overview_Branches') && view.includes('Execution')) {
+        return await readCSV('/data/Execution/Execution-Branches.csv');
+    } else if (view.includes('overview_Branches') && view.includes('Data_Dependency')) {
+        return await readCSV('/data/Data_Dependency/Data_Dependency-Branches.csv');
+    } else if (view.includes('overview_Branches') && view.includes('Store_Intense')) {
+        return await readCSV('/data/Store_Intense/Store_Intense-Branches.csv');
     }
     return [];
 }
@@ -155,6 +205,122 @@ const preProcessAncil2Data = (data) => {
     return transformedData;
 };
 
+const preProcessAncil3Data = (data,view) => {
+    const transformedData = {};
+    if (view.includes('Memory')) {
+        data.forEach((d) => {
+            const parameter = d.Parameter;
+            const value = d.Value;
+            const key = `${parameter}-${value}`;
+            const transformedItem = {
+                ML2: parseFloat(d["ml2"]).toFixed(3),
+                MC: parseFloat(d["mc"]).toFixed(3),
+                MIM2: parseFloat(d["mim2"]).toFixed(3),
+                M: parseFloat(d["m"]).toFixed(3),
+                MI: parseFloat(d["mi"]).toFixed(3),
+                MIM: parseFloat(d["mim"]).toFixed(3),
+                MCS : parseFloat(d["mcs"]).toFixed(3),
+                MD : parseFloat(d["md"]).toFixed(3),
+                MIP: parseFloat(d["mip"]).toFixed(3),
+            };
+
+            for (const prop in transformedItem) {
+                if (isNaN(transformedItem[prop])) {
+                    transformedItem[prop] = 1;
+                }
+            }
+
+            transformedData[key] = transformedItem;
+        });
+    } else if (view.includes('Control')) {
+        data.forEach((d) => {
+            const parameter = d.Parameter;
+            const value = d.Value;
+            const key = `${parameter}-${value}`;
+            const transformedItem = {
+                CS1: parseFloat(d["cs1"]).toFixed(3),
+                CRf: parseFloat(d["crf"]).toFixed(3),
+                CCm: parseFloat(d["ccm"]).toFixed(3),
+                CCa: parseFloat(d["cca"]).toFixed(3),
+                CCe: parseFloat(d["cce"]).toFixed(3),
+                CCh: parseFloat(d["cch"]).toFixed(3),
+                CS3: parseFloat(d["cs3"]).toFixed(3),
+                CRd: parseFloat(d["crd"]).toFixed(3),
+                CCI: parseFloat(d["cci"]).toFixed(3),
+            };
+
+            for (const prop in transformedItem) {
+                if (isNaN(transformedItem[prop])) {
+                    transformedItem[prop] = 1;
+                }
+            }
+
+            transformedData[key] = transformedItem;
+        }
+        );
+    } else if (view.includes('Execution')) {
+        data.forEach((d) => {
+            const parameter = d.Parameter;
+            const value = d.Value;
+            const key = `${parameter}-${value}`;
+            const transformedItem = {
+                EM5: parseFloat(d["em5"]).toFixed(3),
+                EM1: parseFloat(d["em1"]).toFixed(3),
+                EI: parseFloat(d["ei"]).toFixed(3),
+                ED1: parseFloat(d["ed1"]).toFixed(3),
+            };
+
+            for (const prop in transformedItem) {
+                if (isNaN(transformedItem[prop])) {
+                    transformedItem[prop] = 1;
+                }
+            }
+
+            transformedData[key] = transformedItem;
+        });
+    } else if (view.includes('Data_Dependency')) {
+        data.forEach((d) => {
+            const parameter = d.Parameter;
+            const value = d.Value;
+            const key = `${parameter}-${value}`;
+            const transformedItem = {
+                DPT: parseFloat(d["dpt"]).toFixed(3),
+                DPTd: parseFloat(d["dptd"]).toFixed(3),
+                DPCVt: parseFloat(d["dpcvt"]).toFixed(3),
+                DP1f: parseFloat(d["dp1f"]).toFixed(3),
+                DP1d: parseFloat(d["dp1d"]).toFixed(3),
+            };
+
+            for (const prop in transformedItem) {
+                if (isNaN(transformedItem[prop])) {
+                    transformedItem[prop] = 1;
+                }
+            }
+
+            transformedData[key] = transformedItem;
+        });
+    } else if (view.includes('Store_Intense')) {
+        data.forEach((d) => {
+            const parameter = d.Parameter;
+            const value = d.Value;
+            const key = `${parameter}-${value}`;
+            const transformedItem = {
+                STL2: parseFloat(d["stl2"]).toFixed(3),
+                STc: parseFloat(d["stc"]).toFixed(3),
+            };
+
+            for (const prop in transformedItem) {
+                if (isNaN(transformedItem[prop])) {
+                    transformedItem[prop] = 1;
+                }
+            }
+
+            transformedData[key] = transformedItem;
+        });
+    }
+    return transformedData;
+}
+
 const StarChart = ({ parameter, view, setView }) => {
     console.log("View:", view);
     const [data, setData] = useState([]);
@@ -191,6 +357,9 @@ const StarChart = ({ parameter, view, setView }) => {
     } else if (view === 'overview_Instructions' || view === 'overview_Cycles' || view === 'overview_IPC' || view === 'overview_Seconds' || view === 'overview_Branches') {
         processedData = preProcessAncil2Data(trimmedData);
         processedNormalizedData = preProcessAncil2Data(trimmedNormalizedData);
+    } else if (view.includes('Control')|| view.includes('Memory') || view.includes('Execution') || view.includes('Data_Dependency') || view.includes('Store_Intense')) {
+        processedData = preProcessAncil3Data(trimmedData,view);
+        processedNormalizedData = preProcessAncil3Data(trimmedNormalizedData,view);
     }
 
     const svgRef = useRef(null);
@@ -283,6 +452,7 @@ const StarChart = ({ parameter, view, setView }) => {
             .style("cursor", "pointer")
             .on("click", function (event) {
                 var clickedElement = d3.select(this).text();
+                clickedElement = clickedElement.split(" ").join("_");
                 setView(view+"_"+clickedElement);
             });
 
