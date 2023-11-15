@@ -1,78 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
-import { createPortal } from 'react-dom';
-import { readCSV } from '../util/CSV-Reader';
 import normalizeData from '../util/Normalizer';
+import getCorrectData from '../util/StarData';
+import {preProcessAncil1Data, preProcessAncil2Data, preProcessAncil3Data} from '../util/StarDataPreprocess';
 
 let rectangle;
 let selectedPolygon = null;
-
-const getCorrectData = async (view) => {
-    if (view === 'overview') {
-        return await readCSV('/data/overall-stats.csv');
-    } else if (view === 'overview_Instructions') {
-        return await readCSV('/data/instructions-stats.csv');
-    } else if (view === 'overview_Cycles') {
-        return await readCSV('/data/cycles-stats.csv');
-    } else if (view === 'overview_IPC') {
-        return await readCSV('/data/IPC-stats.csv');
-    } else if (view === 'overview_Seconds') {
-        return await readCSV('/data/seconds-stats.csv');
-    } else if (view === 'overview_Branches') {
-        return await readCSV('/data/branches-stats.csv');
-    } else if (view.includes('overview_Instructions') && view.includes('Control')) {
-        return await readCSV('/data/Control/Control-Instructions.csv');
-    } else if (view.includes('overview_Instructions') && view.includes('Memory')) {
-        return await readCSV('/data/Memory/Memory-Instructions.csv');
-    } else if (view.includes('overview_Instructions') && view.includes('Execution')) {
-        return await readCSV('/data/Execution/Execution-Instructions.csv');
-    } else if (view.includes('overview_Instructions') && view.includes('Data_Dependency')) {
-        return await readCSV('/data/Data_Dependency/Data_Dependency-Instructions.csv');
-    } else if (view.includes('overview_Instructions') && view.includes('Store_Intense')) {
-        return await readCSV('/data/Store_Intense/Store_Intense-Instructions.csv');
-    } else if (view.includes('overview_Cycles') && view.includes('Control')) {
-        return await readCSV('/data/Control/Control-Cycles.csv');
-    } else if (view.includes('overview_Cycles') && view.includes('Memory')) {
-        return await readCSV('/data/Memory/Memory-Cycles.csv');
-    } else if (view.includes('overview_Cycles') && view.includes('Execution')) {
-        return await readCSV('/data/Execution/Execution-Cycles.csv');
-    } else if (view.includes('overview_Cycles') && view.includes('Data_Dependency')) {
-        return await readCSV('/data/Data_Dependency/Data_Dependency-Cycles.csv');
-    } else if (view.includes('overview_Cycles') && view.includes('Store_Intense')) {
-        return await readCSV('/data/Store_Intense/Store_Intense-Cycles.csv');
-    } else if (view.includes('overview_IPC') && view.includes('Control')) {
-        return await readCSV('/data/Control/Control-IPC.csv');
-    } else if (view.includes('overview_IPC') && view.includes('Memory')) {
-        return await readCSV('/data/Memory/Memory-IPC.csv');
-    } else if (view.includes('overview_IPC') && view.includes('Execution')) {
-        return await readCSV('/data/Execution/Execution-IPC.csv');
-    } else if (view.includes('overview_IPC') && view.includes('Data_Dependency')) {
-        return await readCSV('/data/Data_Dependency/Data_Dependency-IPC.csv');
-    } else if (view.includes('overview_IPC') && view.includes('Store_Intense')) {
-        return await readCSV('/data/Store_Intense/Store_Intense-IPC.csv');
-    } else if (view.includes('overview_Seconds') && view.includes('Control')) {
-        return await readCSV('/data/Control/Control-Seconds.csv');
-    } else if (view.includes('overview_Seconds') && view.includes('Memory')) {
-        return await readCSV('/data/Memory/Memory-Seconds.csv');
-    } else if (view.includes('overview_Seconds') && view.includes('Execution')) {
-        return await readCSV('/data/Execution/Execution-Seconds.csv');
-    } else if (view.includes('overview_Seconds') && view.includes('Data_Dependency')) {
-        return await readCSV('/data/Data_Dependency/Data_Dependency-Seconds.csv');
-    } else if (view.includes('overview_Seconds') && view.includes('Store_Intense')) {
-        return await readCSV('/data/Store_Intense/Store_Intense-Seconds.csv');
-    } else if (view.includes('overview_Branches') && view.includes('Control')) {
-        return await readCSV('/data/Control/Control-Branches.csv');
-    } else if (view.includes('overview_Branches') && view.includes('Memory')) {
-        return await readCSV('/data/Memory/Memory-Branches.csv');
-    } else if (view.includes('overview_Branches') && view.includes('Execution')) {
-        return await readCSV('/data/Execution/Execution-Branches.csv');
-    } else if (view.includes('overview_Branches') && view.includes('Data_Dependency')) {
-        return await readCSV('/data/Data_Dependency/Data_Dependency-Branches.csv');
-    } else if (view.includes('overview_Branches') && view.includes('Store_Intense')) {
-        return await readCSV('/data/Store_Intense/Store_Intense-Branches.csv');
-    }
-    return [];
-}
 
 function addListener(svg, data, keyText, className, view) {
     if (view === 'overview') {
@@ -152,173 +85,205 @@ function addListener(svg, data, keyText, className, view) {
             selectedPolygon = null;
         });
 
+    } else if (view.includes("Store_Intense")) {
+        svg.selectAll(className)
+        .on("mouseover", function (event, d) {
+            rectangle.attr("stroke", "black");
+            var key = d3.select(this).attr("data-key");
+            var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            selectedPolygon = polygon.clone(true);
+            selectedPolygon.attr("stroke", "black");
+            selectedPolygon.attr("pointer-events", "none");
+            svg.node().appendChild(selectedPolygon.node());
+
+            var parameter = "Parameter: "+ key.split("-")[0];
+            var value = "Value: " + key.split("-")[1];
+            var stl2 = "STL2: " + data[key].STL2;
+            var stc = "STc: " + data[key].STc;
+
+            keyText.text("");
+            keyText.append("tspan").text(parameter);
+            keyText.append("tspan").text(value);
+            keyText.append("tspan").text(stl2);
+            keyText.append("tspan").text(stc);
+
+            keyText.selectAll("tspan")
+            .attr("x", 160)
+            .attr("dy", "1.2em");
+        })
+        .on("mouseout", function (event, d) {
+            rectangle.attr("stroke", "transparent");
+            keyText.text("");
+            selectedPolygon.remove();
+            selectedPolygon = null;
+        });
+    } else if (view.includes("Control")) {
+        svg.selectAll(className)
+        .on("mouseover", function (event, d) {
+            rectangle.attr("stroke", "black");
+            var key = d3.select(this).attr("data-key");
+            var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            selectedPolygon = polygon.clone(true);
+            selectedPolygon.attr("stroke", "black");
+            selectedPolygon.attr("pointer-events", "none");
+            svg.node().appendChild(selectedPolygon.node());
+
+            var parameter = "Parameter: "+ key.split("-")[0];
+            var value = "Value: " + key.split("-")[1];
+            var cs1 = "CS1: " + data[key].CS1;
+            var crf = "CRf: " + data[key].CRf;
+            var ccm = "CCm: " + data[key].CCm;
+            var cca = "CCa: " + data[key].CCa;
+            var cce = "CCe: " + data[key].CCe;
+            var cch = "CCh: " + data[key].CCh;
+            var cs3 = "CS3: " + data[key].CS3;
+            var crd = "CRd: " + data[key].CRd;
+            var cci = "CCI: " + data[key].CCI;
+
+            keyText.text("");
+            keyText.append("tspan").text(parameter);
+            keyText.append("tspan").text(value);
+            keyText.append("tspan").text(cs1);
+            keyText.append("tspan").text(crf);
+            keyText.append("tspan").text(ccm);
+            keyText.append("tspan").text(cca);
+            keyText.append("tspan").text(cce);
+            keyText.append("tspan").text(cch);
+            keyText.append("tspan").text(cs3);
+            keyText.append("tspan").text(crd);
+            keyText.append("tspan").text(cci);
+
+            keyText.selectAll("tspan")
+            .attr("x", 160)
+            .attr("dy", "1.2em");
+        })
+        .on("mouseout", function (event, d) {
+            rectangle.attr("stroke", "transparent");
+            keyText.text("");
+            selectedPolygon.remove();
+            selectedPolygon = null;
+        });
+    } else if (view.includes("Memory")) {
+        svg.selectAll(className)
+        .on("mouseover", function (event, d) {
+            rectangle.attr("stroke", "black");
+            var key = d3.select(this).attr("data-key");
+            var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            selectedPolygon = polygon.clone(true);
+            selectedPolygon.attr("stroke", "black");
+            selectedPolygon.attr("pointer-events", "none");
+            svg.node().appendChild(selectedPolygon.node());
+
+            var parameter = "Parameter: "+ key.split("-")[0];
+            var value = "Value: " + key.split("-")[1];
+            var ml2 = "ML2: " + data[key].ML2;
+            var mc = "MC: " + data[key].MC;
+            var mim2 = "MIM2: " + data[key].MIM2;
+            var m = "M: " + data[key].M;
+            var mi = "MI: " + data[key].MI;
+            var mim = "MIM: " + data[key].MIM;
+            var mcs = "MCS: " + data[key].MCS;
+            var md = "MD: " + data[key].MD;
+            var mip = "MIP: " + data[key].MIP;
+
+            keyText.text("");
+            keyText.append("tspan").text(parameter);
+            keyText.append("tspan").text(value);
+            keyText.append("tspan").text(ml2);
+            keyText.append("tspan").text(mc);
+            keyText.append("tspan").text(mim2);
+            keyText.append("tspan").text(m);
+            keyText.append("tspan").text(mi);
+            keyText.append("tspan").text(mim);
+            keyText.append("tspan").text(mcs);
+            keyText.append("tspan").text(md);
+            keyText.append("tspan").text(mip);
+
+            keyText.selectAll("tspan")
+            .attr("x", 160)
+            .attr("dy", "1.2em");
+        })
+        .on("mouseout", function (event, d) {
+            rectangle.attr("stroke", "transparent");
+            keyText.text("");
+            selectedPolygon.remove();
+            selectedPolygon = null;
+        });
+    } else if (view.includes("Execution")) {
+        svg.selectAll(className)
+        .on("mouseover", function (event, d) {
+            rectangle.attr("stroke", "black");
+            var key = d3.select(this).attr("data-key");
+            var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            selectedPolygon = polygon.clone(true);
+            selectedPolygon.attr("stroke", "black");
+            selectedPolygon.attr("pointer-events", "none");
+            svg.node().appendChild(selectedPolygon.node());
+
+            var parameter = "Parameter: "+ key.split("-")[0];
+            var value = "Value: " + key.split("-")[1];
+            var em5 = "EM5: " + data[key].EM5;
+            var em1 = "EM1: " + data[key].EM1;
+            var ei = "EI: " + data[key].EI;
+            var ed1 = "ED1: " + data[key].ED1;
+
+            keyText.text("");
+            keyText.append("tspan").text(parameter);
+            keyText.append("tspan").text(value);
+            keyText.append("tspan").text(em5);
+            keyText.append("tspan").text(em1);
+            keyText.append("tspan").text(ei);
+            keyText.append("tspan").text(ed1);
+
+            keyText.selectAll("tspan")
+            .attr("x", 160)
+            .attr("dy", "1.2em");
+        })
+        .on("mouseout", function (event, d) {
+            rectangle.attr("stroke", "transparent");
+            keyText.text("");
+            selectedPolygon.remove();
+            selectedPolygon = null;
+        });
+    } else if (view.includes("Data_Dependency")) {
+        svg.selectAll(className)
+        .on("mouseover", function (event, d) {
+            rectangle.attr("stroke", "black");
+            var key = d3.select(this).attr("data-key");
+            var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            selectedPolygon = polygon.clone(true);
+            selectedPolygon.attr("stroke", "black");
+            selectedPolygon.attr("pointer-events", "none");
+            svg.node().appendChild(selectedPolygon.node());
+
+            var parameter = "Parameter: "+ key.split("-")[0];
+            var value = "Value: " + key.split("-")[1];
+            var dpt = "DPT: " + data[key].DPT;
+            var dptd = "DPTd: " + data[key].DPTd;
+            var dpcvt = "DPCVt: " + data[key].DPCVt;
+            var dp1f = "DP1f: " + data[key].DP1f;
+            var dp1d = "DP1d: " + data[key].DP1d;
+
+            keyText.text("");
+            keyText.append("tspan").text(parameter);
+            keyText.append("tspan").text(value);
+            keyText.append("tspan").text(dpt);
+            keyText.append("tspan").text(dptd);
+            keyText.append("tspan").text(dpcvt);
+            keyText.append("tspan").text(dp1f);
+            keyText.append("tspan").text(dp1d);
+
+            keyText.selectAll("tspan")
+            .attr("x", 160)
+            .attr("dy", "1.2em");
+        })
+        .on("mouseout", function (event, d) {
+            rectangle.attr("stroke", "transparent");
+            keyText.text("");
+            selectedPolygon.remove();
+            selectedPolygon = null;
+        });
     }
-}
-
-const preProcessAncil1Data = (data) => {
-    const transformedData = {};
-    data.forEach((d) => {
-        const parameter = d.Parameter;
-        const value = d.Value;
-        const key = `${parameter}-${value}`;
-        const transformedItem = {
-            Instructions: parseFloat(d["Instructions"]).toFixed(3),
-            Cycles: parseFloat(d["Cycles"]).toFixed(3),
-            IPC: parseFloat(d["IPC"]).toFixed(3),
-            Seconds: parseFloat(d["Seconds"]).toFixed(3),
-            Branches: parseFloat(d["Branches"]).toFixed(3),
-        };
-
-        for (const prop in transformedItem) {
-            if (isNaN(transformedItem[prop])) {
-                transformedItem[prop] = 1;
-            }
-        }
-
-        transformedData[key] = transformedItem;
-    });
-    return transformedData;
-};
-
-const preProcessAncil2Data = (data) => {
-    const transformedData = {};
-    data.forEach((d) => {
-        const parameter = d.Parameter;
-        const value = d.Value;
-        const key = `${parameter}-${value}`;
-        const transformedItem = {
-            Store_Intense: parseFloat(d["store_intense"]).toFixed(3),
-            Control: parseFloat(d["control"]).toFixed(3),
-            Execution: parseFloat(d["execution"]).toFixed(3),
-            Memory: parseFloat(d["memory"]).toFixed(3),
-            Data_Dependency: parseFloat(d["data_dependency"]).toFixed(3),
-        };
-
-        for (const prop in transformedItem) {
-            if (isNaN(transformedItem[prop])) {
-                transformedItem[prop] = 1;
-            }
-        }
-
-        transformedData[key] = transformedItem;
-    });
-    return transformedData;
-};
-
-const preProcessAncil3Data = (data,view) => {
-    const transformedData = {};
-    if (view.includes('Memory')) {
-        data.forEach((d) => {
-            const parameter = d.Parameter;
-            const value = d.Value;
-            const key = `${parameter}-${value}`;
-            const transformedItem = {
-                ML2: parseFloat(d["ml2"]).toFixed(3),
-                MC: parseFloat(d["mc"]).toFixed(3),
-                MIM2: parseFloat(d["mim2"]).toFixed(3),
-                M: parseFloat(d["m"]).toFixed(3),
-                MI: parseFloat(d["mi"]).toFixed(3),
-                MIM: parseFloat(d["mim"]).toFixed(3),
-                MCS : parseFloat(d["mcs"]).toFixed(3),
-                MD : parseFloat(d["md"]).toFixed(3),
-                MIP: parseFloat(d["mip"]).toFixed(3),
-            };
-
-            for (const prop in transformedItem) {
-                if (isNaN(transformedItem[prop])) {
-                    transformedItem[prop] = 1;
-                }
-            }
-
-            transformedData[key] = transformedItem;
-        });
-    } else if (view.includes('Control')) {
-        data.forEach((d) => {
-            const parameter = d.Parameter;
-            const value = d.Value;
-            const key = `${parameter}-${value}`;
-            const transformedItem = {
-                CS1: parseFloat(d["cs1"]).toFixed(3),
-                CRf: parseFloat(d["crf"]).toFixed(3),
-                CCm: parseFloat(d["ccm"]).toFixed(3),
-                CCa: parseFloat(d["cca"]).toFixed(3),
-                CCe: parseFloat(d["cce"]).toFixed(3),
-                CCh: parseFloat(d["cch"]).toFixed(3),
-                CS3: parseFloat(d["cs3"]).toFixed(3),
-                CRd: parseFloat(d["crd"]).toFixed(3),
-                CCI: parseFloat(d["cci"]).toFixed(3),
-            };
-
-            for (const prop in transformedItem) {
-                if (isNaN(transformedItem[prop])) {
-                    transformedItem[prop] = 1;
-                }
-            }
-
-            transformedData[key] = transformedItem;
-        }
-        );
-    } else if (view.includes('Execution')) {
-        data.forEach((d) => {
-            const parameter = d.Parameter;
-            const value = d.Value;
-            const key = `${parameter}-${value}`;
-            const transformedItem = {
-                EM5: parseFloat(d["em5"]).toFixed(3),
-                EM1: parseFloat(d["em1"]).toFixed(3),
-                EI: parseFloat(d["ei"]).toFixed(3),
-                ED1: parseFloat(d["ed1"]).toFixed(3),
-            };
-
-            for (const prop in transformedItem) {
-                if (isNaN(transformedItem[prop])) {
-                    transformedItem[prop] = 1;
-                }
-            }
-
-            transformedData[key] = transformedItem;
-        });
-    } else if (view.includes('Data_Dependency')) {
-        data.forEach((d) => {
-            const parameter = d.Parameter;
-            const value = d.Value;
-            const key = `${parameter}-${value}`;
-            const transformedItem = {
-                DPT: parseFloat(d["dpt"]).toFixed(3),
-                DPTd: parseFloat(d["dptd"]).toFixed(3),
-                DPCVt: parseFloat(d["dpcvt"]).toFixed(3),
-                DP1f: parseFloat(d["dp1f"]).toFixed(3),
-                DP1d: parseFloat(d["dp1d"]).toFixed(3),
-            };
-
-            for (const prop in transformedItem) {
-                if (isNaN(transformedItem[prop])) {
-                    transformedItem[prop] = 1;
-                }
-            }
-
-            transformedData[key] = transformedItem;
-        });
-    } else if (view.includes('Store_Intense')) {
-        data.forEach((d) => {
-            const parameter = d.Parameter;
-            const value = d.Value;
-            const key = `${parameter}-${value}`;
-            const transformedItem = {
-                STL2: parseFloat(d["stl2"]).toFixed(3),
-                STc: parseFloat(d["stc"]).toFixed(3),
-            };
-
-            for (const prop in transformedItem) {
-                if (isNaN(transformedItem[prop])) {
-                    transformedItem[prop] = 1;
-                }
-            }
-
-            transformedData[key] = transformedItem;
-        });
-    }
-    return transformedData;
 }
 
 const StarChart = ({ parameter, view, setView }) => {
