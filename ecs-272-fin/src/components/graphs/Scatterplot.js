@@ -1,13 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
-import Tooltip from './PrincipalComponentPlot';
-import StarChart from './StarChart';
 
-const ScatterPlot = ({ data, pc1, pc2 }) => {
-  console.log(data);
+const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
   const svgRef = useRef();
-  const [tooltipAxis, setTooltipAxis] = useState(null);
-  const [overview, setOverview] = useState([null, null]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -137,7 +132,8 @@ const ScatterPlot = ({ data, pc1, pc2 }) => {
         // Print out all points with the same parameter
         const pointsWithSameParameter = data.filter((datum) => datum.parameter === d.parameter);
         console.log("Points with Parameter", pointsWithSameParameter);
-        setOverview([d.parameter, "overview"]);
+        setParameter(d.parameter);
+        setView('overview');
       }
 
     // Add labels for the axes and make them clickable
@@ -265,7 +261,7 @@ const ScatterPlot = ({ data, pc1, pc2 }) => {
             // axisTooltip.transition()
             //     .duration(500)
             //     .style("opacity", 0);
-            setTooltipAxis(null);
+            callbackPC(null);
             tooltipVisible = false;
         } else {
             // Display the appropriate tooltip
@@ -273,12 +269,12 @@ const ScatterPlot = ({ data, pc1, pc2 }) => {
                 // axisTooltip.html("PC1 is the first principal component")
                 //     .style("left", `${width / 2}px`)
                 //     .style("top", `${height + margin.top + 10}px`);
-                setTooltipAxis('PC1');
+                callbackPC('PC1');
             } else {
                 // axisTooltip.html("PC2 is the second principal component")
                 //     .style("left", `${-margin.left + 10}px`)
                 //     .style("top", `${height / 2}px`);
-                setTooltipAxis('PC2');
+                callbackPC('PC2');
             }
 
             // Update the state variables
@@ -286,23 +282,15 @@ const ScatterPlot = ({ data, pc1, pc2 }) => {
             tooltipVisible = true;
         }
         setTimeout(function () {
-            setTooltipAxis(null);
+            callbackPC(null);
         }, 15000);
     }
     };
 
-    console.log("overview", overview);
     return (
         <div>
           <svg ref={svgRef}>
-          {tooltipAxis && (
-            <Tooltip axis={tooltipAxis} data={tooltipAxis === 'PC1' ? pc1 : pc2} width={window.innerWidth} height={window.innerHeight} margin={0} />
-          )}
           </svg>
-          {overview && (
-            <StarChart parameter={overview[0]} view={overview[1]} />
-          )}
-
         </div>
       );
 };
