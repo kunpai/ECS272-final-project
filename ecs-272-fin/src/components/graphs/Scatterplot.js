@@ -90,6 +90,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('cy', (d) => yScale(d.PC2))
       .attr('r', 5) // Radius of the circles
       .attr('fill', (d) => colorScale(d.parameter))
+      .attr('class', (d) => d.parameter.replace(/\./g, '-').replace(/[^a-zA-Z0-9-_]/g, ''))
       .on('mouseenter', handleMouseEnter)
       .on('mouseleave', handleMouseLeave)
       .on('click', (event, d) => handleMouseClick(d));
@@ -102,6 +103,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     });
 
     svg.call(zoom);
+    const initialDataOrder = data.map(d => d.parameter);
 
     function handleMouseEnter(event, d) {
       const currentColor = d3.select(this).attr('fill');
@@ -115,6 +117,9 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
         .attr('opacity', 0.7)
         .attr('r', 7);
 
+      const className = d3.select(this).attr('class');
+        svg.selectAll(`.${className}`).raise();
+
       circles.filter((datum) => datum.parameter !== d.parameter && datum.parameter === currentColor)
         .attr('opacity', 0.3);
 
@@ -123,8 +128,9 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
 
     // Function to handle mouse leave event
     function handleMouseLeave() {
-        tooltip.transition().duration(500).style("opacity", 0);
+      tooltip.transition().duration(500).style("opacity", 0);
       circles.attr('opacity', 1).attr('r', 5);
+      svg.selectAll('circle').sort((a, b) => initialDataOrder.indexOf(a.parameter) - initialDataOrder.indexOf(b.parameter));
     }
 
     function handleMouseClick(d) {
