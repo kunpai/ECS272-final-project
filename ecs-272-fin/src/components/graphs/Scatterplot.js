@@ -290,10 +290,8 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     };
 
     return (
-        <div>
           <svg ref={svgRef}>
           </svg>
-        </div>
       );
 };
 

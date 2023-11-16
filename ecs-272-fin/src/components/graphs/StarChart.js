@@ -15,6 +15,8 @@ function addListener(svg, data, keyText, className, view) {
                 rectangle.attr("stroke", "black");
                 var key = d3.select(this).attr("data-key");
                 var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+                svg.selectAll(".polygon:not([data-key='" + key + "'])")
+                .style("display", "none");
                 selectedPolygon = polygon.clone(true);
                 selectedPolygon.attr("stroke", "black");
                 selectedPolygon.attr("pointer-events", "none");
@@ -43,6 +45,8 @@ function addListener(svg, data, keyText, className, view) {
             })
             .on("mouseout", function (event, d) {
                 rectangle.attr("stroke", "transparent");
+                svg.selectAll(".polygon")
+                .style("display", "block");
                 keyText.text("");
                 selectedPolygon.remove();
                 selectedPolygon = null;
@@ -53,6 +57,8 @@ function addListener(svg, data, keyText, className, view) {
             rectangle.attr("stroke", "black");
             var key = d3.select(this).attr("data-key");
             var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            svg.selectAll(".polygon:not([data-key='" + key + "'])")
+            .style("display", "none");
             selectedPolygon = polygon.clone(true);
             selectedPolygon.attr("stroke", "black");
             selectedPolygon.attr("pointer-events", "none");
@@ -81,6 +87,8 @@ function addListener(svg, data, keyText, className, view) {
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
+            svg.selectAll(".polygon")
+            .style("display", "block");
             keyText.text("");
             selectedPolygon.remove();
             selectedPolygon = null;
@@ -92,6 +100,8 @@ function addListener(svg, data, keyText, className, view) {
             rectangle.attr("stroke", "black");
             var key = d3.select(this).attr("data-key");
             var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            svg.selectAll(".polygon:not([data-key='" + key + "'])")
+            .style("display", "none");
             selectedPolygon = polygon.clone(true);
             selectedPolygon.attr("stroke", "black");
             selectedPolygon.attr("pointer-events", "none");
@@ -114,6 +124,8 @@ function addListener(svg, data, keyText, className, view) {
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
+            svg.selectAll(".polygon")
+            .style("display", "block");
             keyText.text("");
             selectedPolygon.remove();
             selectedPolygon = null;
@@ -124,6 +136,8 @@ function addListener(svg, data, keyText, className, view) {
             rectangle.attr("stroke", "black");
             var key = d3.select(this).attr("data-key");
             var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            svg.selectAll(".polygon:not([data-key='" + key + "'])")
+            .style("display", "none");
             selectedPolygon = polygon.clone(true);
             selectedPolygon.attr("stroke", "black");
             selectedPolygon.attr("pointer-events", "none");
@@ -160,6 +174,8 @@ function addListener(svg, data, keyText, className, view) {
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
+            svg.selectAll(".polygon")
+            .style("display", "block");
             keyText.text("");
             selectedPolygon.remove();
             selectedPolygon = null;
@@ -170,6 +186,8 @@ function addListener(svg, data, keyText, className, view) {
             rectangle.attr("stroke", "black");
             var key = d3.select(this).attr("data-key");
             var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            svg.selectAll(".polygon:not([data-key='" + key + "'])")
+            .style("display", "none");
             selectedPolygon = polygon.clone(true);
             selectedPolygon.attr("stroke", "black");
             selectedPolygon.attr("pointer-events", "none");
@@ -206,6 +224,8 @@ function addListener(svg, data, keyText, className, view) {
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
+            svg.selectAll(".polygon")
+            .style("display", "block");
             keyText.text("");
             selectedPolygon.remove();
             selectedPolygon = null;
@@ -216,6 +236,8 @@ function addListener(svg, data, keyText, className, view) {
             rectangle.attr("stroke", "black");
             var key = d3.select(this).attr("data-key");
             var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            svg.selectAll(".polygon:not([data-key='" + key + "'])")
+            .style("display", "none");
             selectedPolygon = polygon.clone(true);
             selectedPolygon.attr("stroke", "black");
             selectedPolygon.attr("pointer-events", "none");
@@ -242,6 +264,8 @@ function addListener(svg, data, keyText, className, view) {
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
+            svg.selectAll(".polygon")
+            .style("display", "block");
             keyText.text("");
             selectedPolygon.remove();
             selectedPolygon = null;
@@ -252,6 +276,8 @@ function addListener(svg, data, keyText, className, view) {
             rectangle.attr("stroke", "black");
             var key = d3.select(this).attr("data-key");
             var polygon = svg.selectAll(".polygon[data-key='" + key + "']");
+            svg.selectAll(".polygon:not([data-key='" + key + "'])")
+            .style("display", "none");
             selectedPolygon = polygon.clone(true);
             selectedPolygon.attr("stroke", "black");
             selectedPolygon.attr("pointer-events", "none");
@@ -280,6 +306,8 @@ function addListener(svg, data, keyText, className, view) {
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
+            svg.selectAll(".polygon")
+            .style("display", "block");
             keyText.text("");
             selectedPolygon.remove();
             selectedPolygon = null;
@@ -365,13 +393,13 @@ const StarChart = ({ parameter, view, setView }) => {
 
     const drawChart = (normalizedData, data) => {
         d3.select(svgRef.current).selectAll("*").remove();
-        var svgWidth = window.innerWidth/(4/3);
+        var svgWidth = window.innerWidth/(4/1);
         var svgHeight = window.innerHeight/(4/3);
         var svg = d3.select(svgRef.current)
             .attr("width", svgWidth)
             .attr("height", svgHeight);
 
-        var centerX = svgWidth / 2 - 75;
+        var centerX = svgWidth / 2;
         var centerY = svgHeight / 2;
         centerX = Math.round(centerX * 10) / 10;
         centerY = Math.round(centerY * 10) / 10;
@@ -520,30 +548,39 @@ const StarChart = ({ parameter, view, setView }) => {
             }
 
             var legendX = svgWidth - 150;
-            var legendY = 50;
+            var legendY = svgHeight - 150;
             var legendSpacing = 25;
+            var maxLegendItemsPerColumn = 4;
+            var columnWidth = 100;
 
             var legend = svg.append("g")
                 .attr("class", "legend")
                 .attr("transform", "translate(" + legendX + "," + legendY + ")");
 
+            var legendData = Object.keys(normalizedData);
+            var numColumns = Math.ceil(legendData.length / maxLegendItemsPerColumn);
+
+            var totalLegendWidth = columnWidth * numColumns;
+
             var legendTitle = legend.append("text")
-                .attr("x", 0)
+                .attr("x", totalLegendWidth / 2 - columnWidth / 4) // Adjusted x-coordinate
                 .attr("y", -10)
                 .text("Values")
-                .attr("text-anchor", "start");
+                .attr("text-anchor", "middle");
 
             var legendLabels = legend.selectAll("g")
-                .data(Object.keys(normalizedData))
+                .data(legendData)
                 .enter().append("g")
                 .attr("class", "legend-label")
                 .attr("data-key", function (d) {
                     return d;
                 })
                 .attr("transform", function (d, i) {
-                    return "translate(0," + i * legendSpacing + ")";
+                    var col = Math.floor(i / maxLegendItemsPerColumn);
+                    var row = i % maxLegendItemsPerColumn;
+                    return "translate(" + col * columnWidth + "," + row * legendSpacing + ")";
                 })
-                .attr("font-size", "12px")
+                .attr("font-size", "12px");
 
             legendLabels.append("rect")
                 .attr("x", 0)
@@ -561,6 +598,7 @@ const StarChart = ({ parameter, view, setView }) => {
                     return d.split("-")[1];
                 })
                 .attr("fill", "black");
+
 
             svg.append("text")
                 .attr("x", svgWidth / 3)

@@ -33,13 +33,13 @@ export default function PCA_Scatterplot() {
     }, []);
 
     return (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
             <ScatterPlot data={data} callbackPC={setTooltipAxis} setParameter={setParameter} setView={setView} />
-            {tooltipAxis && (
-                <Tooltip axis={tooltipAxis} data={tooltipAxis === 'PC1' ? pc1 : pc2} width={window.innerWidth} height={window.innerHeight} margin={0} />
-            )}
             {parameter && view && (
                 <StarChart parameter={parameter} view={view} setView={setView} />
+            )}
+            {tooltipAxis && (
+                <Tooltip axis={tooltipAxis} data={tooltipAxis === 'PC1' ? pc1 : pc2} width={window.innerWidth} height={window.innerHeight} margin={0} />
             )}
         </div>
     );
