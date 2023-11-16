@@ -31,7 +31,7 @@ function addListener(svg, data, keyText, className, view) {
                 var branches = "Avg. Branches: " + data[key].Branches;
 
                 keyText.text("");
-                keyText.append("tspan").text(parameter);
+                // keyText.append("tspan").text(parameter);
                 keyText.append("tspan").text(value);
                 keyText.append("tspan").text(instructions);
                 keyText.append("tspan").text(cycles);
@@ -73,7 +73,7 @@ function addListener(svg, data, keyText, className, view) {
             var store_intense = "Avg. Store Intense: " + data[key].Store_Intense;
 
             keyText.text("");
-            keyText.append("tspan").text(parameter);
+            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(control);
             keyText.append("tspan").text(memory);
@@ -113,7 +113,7 @@ function addListener(svg, data, keyText, className, view) {
             var stc = "STc: " + data[key].STc;
 
             keyText.text("");
-            keyText.append("tspan").text(parameter);
+            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(stl2);
             keyText.append("tspan").text(stc);
@@ -156,7 +156,7 @@ function addListener(svg, data, keyText, className, view) {
             var cci = "CCI: " + data[key].CCI;
 
             keyText.text("");
-            keyText.append("tspan").text(parameter);
+            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(cs1);
             keyText.append("tspan").text(crf);
@@ -206,7 +206,7 @@ function addListener(svg, data, keyText, className, view) {
             var mip = "MIP: " + data[key].MIP;
 
             keyText.text("");
-            keyText.append("tspan").text(parameter);
+            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(ml2);
             keyText.append("tspan").text(mc);
@@ -251,7 +251,7 @@ function addListener(svg, data, keyText, className, view) {
             var ed1 = "ED1: " + data[key].ED1;
 
             keyText.text("");
-            keyText.append("tspan").text(parameter);
+            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(em5);
             keyText.append("tspan").text(em1);
@@ -292,7 +292,7 @@ function addListener(svg, data, keyText, className, view) {
             var dp1d = "DP1d: " + data[key].DP1d;
 
             keyText.text("");
-            keyText.append("tspan").text(parameter);
+            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(dpt);
             keyText.append("tspan").text(dptd);
@@ -412,26 +412,26 @@ const StarChart = ({ parameter, view, setView }) => {
         var angleOffset = (2 * Math.PI) / numElements;
 
         var colors = [
-            "rgba(0, 128, 0, 0.3)",
-            "rgba(255, 0, 0, 0.3)",
-            "rgba(0, 0, 255, 0.3)",
-            "rgba(255, 255, 0, 0.3)",
-            "rgba(0, 255, 255, 0.3)",
-            "rgba(255, 0, 255, 0.3)",
-            "rgba(192, 192, 192, 0.3)",
-            "rgba(128, 128, 0, 0.3)",
-            "rgba(128, 0, 128, 0.3)",
-            "rgba(0, 128, 128, 0.3)",
-            "rgba(128, 128, 128, 0.3)",
-            "rgba(255, 165, 0, 0.3)",
-            "rgba(255, 192, 203, 0.3)",
-            "rgba(255, 228, 225, 0.3)",
-            "rgba(255, 255, 224, 0.3)",
-            "rgba(51, 161, 201, 0.3)",
-            "rgba(0, 138, 184, 0.3)",
-            "rgba(0, 110, 145, 0.3)",
-            "rgba(0, 82, 109, 0.3)",
-            "rgba(0, 55, 73, 0.3)"
+            "rgba(0, 128, 0, 0.1)",
+            "rgba(255, 0, 0, 0.1)",
+            "rgba(0, 0, 255, 0.1)",
+            "rgba(255, 255, 0, 0.1)",
+            "rgba(0, 255, 255, 0.1)",
+            "rgba(255, 0, 255, 0.1)",
+            "rgba(192, 192, 192, 0.1)",
+            "rgba(128, 128, 0, 0.1)",
+            "rgba(128, 0, 128, 0.1)",
+            "rgba(0, 128, 128, 0.1)",
+            "rgba(128, 128, 128, 0.1)",
+            "rgba(255, 165, 0, 0.1)",
+            "rgba(255, 192, 203, 0.1)",
+            "rgba(255, 228, 225, 0.1)",
+            "rgba(255, 255, 224, 0.1)",
+            "rgba(51, 161, 201, 0.1)",
+            "rgba(0, 138, 184, 0.1)",
+            "rgba(0, 110, 145, 0.1)",
+            "rgba(0, 82, 109, 0.1)",
+            "rgba(0, 55, 73, 0.1)"
         ];
 
         svg.append("circle")
@@ -455,7 +455,9 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("y1", y1)
                 .attr("x2", x2)
                 .attr("y2", y2)
-                .attr("stroke", "gray");
+                .attr("stroke", "gray")
+                .transition()
+                .duration(500);
 
             svg.append("text")
             .attr("x", x2)
@@ -475,7 +477,11 @@ const StarChart = ({ parameter, view, setView }) => {
                 var clickedElement = d3.select(this).text();
                 clickedElement = clickedElement.split(" ").join("_");
                 setView(view+"-"+clickedElement);
-            });
+            })
+            .style("opacity", 0)
+            .transition()
+            .duration(500)
+            .style("opacity", 1);
 
             var colorIndex = 0;
 
