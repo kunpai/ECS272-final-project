@@ -10,6 +10,15 @@ let rectangle;
 let selectedPolygon = null;
 
 function addListener(svg, data, keyText, className, view) {
+    function updateRectangleSize() {
+        // Calculate the total height of the text based on the number of lines
+        var lineHeight = 10;
+        var numLines = keyText.selectAll("tspan").size();
+        var totalTextHeight = numLines * lineHeight;
+
+        // Adjust the rectangle height based on the total text height
+        rectangle.attr("height", totalTextHeight + 20);
+    }
     if (view === 'overview') {
         svg.selectAll(className)
             .on("mouseover", function (event, d) {
@@ -43,12 +52,14 @@ function addListener(svg, data, keyText, className, view) {
                 keyText.selectAll("tspan")
                 .attr("x", 160)
                 .attr("dy", "1.2em");
+                updateRectangleSize();
             })
             .on("mouseout", function (event, d) {
                 rectangle.attr("stroke", "transparent");
                 svg.selectAll(".polygon")
                 .style("display", "block");
                 keyText.text("");
+                updateRectangleSize();
                 selectedPolygon.remove();
                 selectedPolygon = null;
             });
@@ -85,12 +96,14 @@ function addListener(svg, data, keyText, className, view) {
             keyText.selectAll("tspan")
             .attr("x", 160)
             .attr("dy", "1.2em");
+            updateRectangleSize();
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
             svg.selectAll(".polygon")
             .style("display", "block");
             keyText.text("");
+            updateRectangleSize();
             selectedPolygon.remove();
             selectedPolygon = null;
         });
@@ -122,12 +135,14 @@ function addListener(svg, data, keyText, className, view) {
             keyText.selectAll("tspan")
             .attr("x", 160)
             .attr("dy", "1.2em");
+            updateRectangleSize();
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
             svg.selectAll(".polygon")
             .style("display", "block");
             keyText.text("");
+            updateRectangleSize();
             selectedPolygon.remove();
             selectedPolygon = null;
         });
@@ -172,12 +187,14 @@ function addListener(svg, data, keyText, className, view) {
             keyText.selectAll("tspan")
             .attr("x", 160)
             .attr("dy", "1.2em");
+            updateRectangleSize();
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
             svg.selectAll(".polygon")
             .style("display", "block");
             keyText.text("");
+            updateRectangleSize();
             selectedPolygon.remove();
             selectedPolygon = null;
         });
@@ -222,12 +239,14 @@ function addListener(svg, data, keyText, className, view) {
             keyText.selectAll("tspan")
             .attr("x", 160)
             .attr("dy", "1.2em");
+            updateRectangleSize();
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
             svg.selectAll(".polygon")
             .style("display", "block");
             keyText.text("");
+            updateRectangleSize();
             selectedPolygon.remove();
             selectedPolygon = null;
         });
@@ -262,12 +281,14 @@ function addListener(svg, data, keyText, className, view) {
             keyText.selectAll("tspan")
             .attr("x", 160)
             .attr("dy", "1.2em");
+            updateRectangleSize();
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
             svg.selectAll(".polygon")
             .style("display", "block");
             keyText.text("");
+            updateRectangleSize();
             selectedPolygon.remove();
             selectedPolygon = null;
         });
@@ -304,12 +325,14 @@ function addListener(svg, data, keyText, className, view) {
             keyText.selectAll("tspan")
             .attr("x", 160)
             .attr("dy", "1.2em");
+            updateRectangleSize();
         })
         .on("mouseout", function (event, d) {
             rectangle.attr("stroke", "transparent");
             svg.selectAll(".polygon")
             .style("display", "block");
             keyText.text("");
+            updateRectangleSize();
             selectedPolygon.remove();
             selectedPolygon = null;
         });
@@ -474,6 +497,7 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("y", y2)
                 .attr("dx", x2 == centerX ? 20 : (x2 > centerX ? 10 : -10))
                 .attr("dy", y2 == centerY ? 10 : (y2 < centerY ? -10 : 20))
+                .attr("font-size", "12px")
                 .text(function () {
                     return elements[i].split("_").map(function (word) {
                         return word.charAt(0).toUpperCase() + word.slice(1);
@@ -500,7 +524,13 @@ const StarChart = ({ parameter, view, setView }) => {
 
                         microbenchTooltip.html(microbenchMeaning[label])
                             .style("left", `${svgWidth*3}px`)
-                            .style("top", `${svgHeight+70}px`);
+                            .style("top", `${svgHeight+90}px`);
+
+                        setTimeout(function() {
+                                microbenchTooltip.transition()
+                                    .duration(200)
+                                    .style("opacity", 0);
+                            }, 10000);
                     }
                 })
                 .on("mouseout", function () {
@@ -515,6 +545,13 @@ const StarChart = ({ parameter, view, setView }) => {
 
             var colorIndex = 0;
 
+            var keyText = svg.append("text")
+                .attr("x", 100)
+                .attr("y", 40)
+                .text("")
+                .attr("text-anchor", "end")
+                .attr("font-size", "10px");
+
             rectangle = svg.append("rect")
                 .attr("x", 0)
                 .attr("y", 40)
@@ -523,12 +560,6 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("fill", "transparent")
                 .attr("stroke", "transparent")
                 .attr("rx", 10)
-            var keyText = svg.append("text")
-                .attr("x", 100)
-                .attr("y", 40)
-                .text("")
-                .attr("text-anchor", "end")
-                .attr("font-size", "10px");
 
             for (var key in normalizedData) {
                 if (normalizedData.hasOwnProperty(key)) {
@@ -637,11 +668,16 @@ const StarChart = ({ parameter, view, setView }) => {
 
 
             svg.append("text")
-                .attr("x", svgWidth / 3)
+                .attr("x", svgWidth / 3 + 50)
                 .attr("y", 30)
                 .attr("text-anchor", "middle")
-                .attr("font-size", "18px")
+                .attr("font-size", function(d) {
+                    const maxFontSize = 18;
+                    const titleLength = parameter.length;
+                    return Math.min(maxFontSize, 1.5* svgWidth / titleLength) + "px";
+                })
                 .text(parameter);
+
 
             addListener(svg, data, keyText, ".polygon", view);
             addListener(svg, data, keyText, ".legend-label", view);
