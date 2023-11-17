@@ -4,6 +4,7 @@ import normalizeData from '../util/Normalizer';
 import getCorrectData from '../util/StarData';
 import { Button } from 'react-bootstrap';
 import {preProcessAncil1Data, preProcessAncil2Data, preProcessAncil3Data} from '../util/StarDataPreprocess';
+import microbenchMeaning from '../util/MicrobenchMeaning';
 
 let rectangle;
 let selectedPolygon = null;
@@ -441,6 +442,15 @@ const StarChart = ({ parameter, view, setView }) => {
             .attr("stroke", "black")
             .attr("fill", "none");
 
+        var microbenchTooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0)
+            .style("position", "absolute")
+            .style("background", "#fff")
+            .style("border", "1px solid #ccc")
+            .style("padding", "10px")
+            .style("box-shadow", "2px 2px 6px rgba(0, 0, 0, 0.1)");
+
         for (var i = 0; i < numElements; i++) {
             var angle = i * angleOffset;
             var x1 = centerX;
@@ -460,28 +470,48 @@ const StarChart = ({ parameter, view, setView }) => {
                 .duration(500);
 
             svg.append("text")
-            .attr("x", x2)
-            .attr("y", y2)
-            .attr("dx", x2 == centerX ? 20 : (x2 > centerX ? 10 : -10))
-            .attr("dy", y2 == centerY ? 10 : (y2 < centerY ? -10 : 20))
-            .text(function () {
-                return elements[i].split("_").map(function (word) {
-                    return word.charAt(0).toUpperCase() + word.slice(1);
-                }).join(" ");
-            })
-            .attr("text-anchor", x2 > centerX ? "start" : "end")
-            .attr("alignment-baseline", "middle")
-            .attr("fill", "black")
-            .style("cursor", "pointer")
-            .on("click", function (event) {
-                var clickedElement = d3.select(this).text();
-                clickedElement = clickedElement.split(" ").join("_");
-                setView(view+"-"+clickedElement);
-            })
-            .style("opacity", 0)
-            .transition()
-            .duration(500)
-            .style("opacity", 1);
+                .attr("x", x2)
+                .attr("y", y2)
+                .attr("dx", x2 == centerX ? 20 : (x2 > centerX ? 10 : -10))
+                .attr("dy", y2 == centerY ? 10 : (y2 < centerY ? -10 : 20))
+                .text(function () {
+                    return elements[i].split("_").map(function (word) {
+                        return word.charAt(0).toUpperCase() + word.slice(1);
+                    }).join(" ");
+                })
+                .attr("text-anchor", x2 > centerX ? "start" : "end")
+                .attr("alignment-baseline", "middle")
+                .attr("fill", "black")
+                .style("cursor", "pointer")
+                .on("click", function (event) {
+                    var clickedElement = d3.select(this).text();
+                    clickedElement = clickedElement.split(" ").join("_");
+                    setView(view + "-" + clickedElement);
+                })
+                .style("opacity", 0)
+                .on("mouseover", function () {
+                    var label = d3.select(this).text();
+                    label = label.split(" ").join("_").toLowerCase();
+
+                    if (microbenchMeaning[label]) {
+                        microbenchTooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+
+                        microbenchTooltip.html(microbenchMeaning[label])
+                            .style("left", `${svgWidth*3}px`)
+                            .style("top", `${svgHeight+70}px`);
+                    }
+                })
+                .on("mouseout", function () {
+                    microbenchTooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0);
+                })
+                .transition()
+                .duration(500)
+                .style("opacity", 1);
+
 
             var colorIndex = 0;
 
