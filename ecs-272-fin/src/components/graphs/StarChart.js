@@ -17,7 +17,7 @@ function addListener(svg, data, keyText, className, view) {
         var totalTextHeight = numLines * lineHeight;
 
         // Adjust the rectangle height based on the total text height
-        rectangle.attr("height", totalTextHeight + 20);
+        rectangle.attr("height", totalTextHeight + 30);
     }
     if (view === 'overview') {
         svg.selectAll(className)
