@@ -42,13 +42,10 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       '#1f77b4', '#ff7f0e', '#2ca02c'
     ];
 
-    console.log(distinctColors);
-
     const colorScale = d3.scaleOrdinal()
       .range(distinctColors)
       .domain(uniqueParameters);
 
-    // Create an SVG container
     const svg = d3
       .select(svgRef.current)
       .attr('width', width + margin.left + margin.right)
@@ -59,28 +56,39 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     const xScale = d3.scaleLinear().domain([pc1Extent[0] - 4, pc1Extent[1] - 4]).range([0, width]);
     const yScale = d3.scaleLinear().domain([pc2Extent[0] - 4, pc2Extent[1] - 4]).range([height, 0]);
 
-    // Create and append axes
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
-    svg.append('g').attr('class', 'x-axis').attr('transform', `translate(0,${height})`).call(xAxis);
-    svg.append('g').attr('class', 'y-axis').call(yAxis);
+    svg.append('g')
+    .attr('class', 'x-axis')
+    .attr('transform', `translate(0,${height})`)
+    .call(xAxis)
+    .attr('opacity', 0)
+    .transition()
+    .duration(500)
+    .attr('opacity', 1);
+
+    svg.append('g')
+      .attr('class', 'y-axis')
+      .call(yAxis)
+      .attr('opacity', 0)
+      .transition()
+      .duration(500)
+      .attr('opacity', 1);
 
     const tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0)
-    .style("position", "absolute")
-    .style("pointer-events", "none");
+      .attr("class", "tooltip")
+      .style("opacity", 0)
+      .style("position", "absolute")
+      .style("pointer-events", "none");
 
     tooltip.append("div")
-    .style("font-size", "12px") // Set the font size here
-    .style("padding", "8px")
-    .style("background", "rgba(255, 255, 255, 0.8)")
-    .style("border", "1px solid #ccc")
-    .style("border-radius", "5px");
+      .style("font-size", "12px")
+      .style("padding", "8px")
+      .style("background", "rgba(255, 255, 255, 0.8)")
+      .style("border", "1px solid #ccc")
+      .style("border-radius", "5px");
 
-
-    // Create circles for the scatter plot
     const circles = svg
       .selectAll('circle')
       .data(data)
@@ -88,12 +96,18 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .append('circle')
       .attr('cx', (d) => xScale(d.PC1))
       .attr('cy', (d) => yScale(d.PC2))
-      .attr('r', 5) // Radius of the circles
+      .attr('r', 0)
+      // .attr('r', 5) // Radius of the circles
       .attr('fill', (d) => colorScale(d.parameter))
       .attr('class', (d) => d.parameter.replace(/\./g, '-').replace(/[^a-zA-Z0-9-_]/g, ''))
       .on('mouseenter', handleMouseEnter)
       .on('mouseleave', handleMouseLeave)
       .on('click', (event, d) => handleMouseClick(d));
+
+    circles
+      .transition()
+      .duration(500)
+      .attr('r', 5);
 
     const zoom = d3.zoom().scaleExtent([1, 10]).on('zoom', (event) => {
       const { transform } = event;
@@ -103,10 +117,8 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     });
 
     svg.call(zoom);
-    const initialDataOrder = data.map(d => d.parameter);
 
     function handleMouseEnter(event, d) {
-      const currentColor = d3.select(this).attr('fill');
 
       tooltip.transition().duration(200).style("opacity", 0.9);
       tooltip.html(`Parameter: ${d.parameter} <br/> Value: ${d.value}`)
@@ -115,32 +127,22 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
 
       circles.filter((datum) => datum.parameter === d.parameter)
         .attr('opacity', 0.7)
-        .attr('r', 7);
+        .attr('r', 7)
+        .raise();
 
-      const className = d3.select(this).attr('class');
-        svg.selectAll(`.${className}`).raise();
-
-      circles.filter((datum) => datum.parameter !== d.parameter && datum.parameter === currentColor)
+      circles.filter((datum) => datum.parameter !== d.parameter)
         .attr('opacity', 0.3);
-
-
     }
 
-    // Function to handle mouse leave event
     function handleMouseLeave() {
       tooltip.transition().duration(500).style("opacity", 0);
       circles.attr('opacity', 1).attr('r', 5);
-      svg.selectAll('circle').sort((a, b) => initialDataOrder.indexOf(a.parameter) - initialDataOrder.indexOf(b.parameter));
     }
 
     function handleMouseClick(d) {
-        console.log("Clicked on point with parameter:", d.parameter);
-        // Print out all points with the same parameter
-        const pointsWithSameParameter = data.filter((datum) => datum.parameter === d.parameter);
-        console.log("Points with Parameter", pointsWithSameParameter);
         setParameter(d.parameter);
         setView('overview');
-      }
+    }
 
     // Add labels for the axes and make them clickable
     const xAxisLabel = svg
@@ -149,7 +151,11 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .style('text-anchor', 'middle')
       .text('PC1')
       .style("cursor", "pointer")
-      .on('click', () => handleAxisLabelClick('PC1'));
+      .on('click', () => handleAxisLabelClick('PC1'))
+      .attr('opacity', 0)
+      .transition()
+      .duration(500)
+      .attr('opacity', 1);
 
     const yAxisLabel = svg
       .append('text')
@@ -157,9 +163,14 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .style('text-anchor', 'middle')
       .text('PC2')
       .style("cursor", "pointer")
-      .on('click', () => handleAxisLabelClick('PC2'));
+      .on('click', () => handleAxisLabelClick('PC2'))
+      .attr('opacity', 0)
+      .transition()
+      .duration(500)
+      .attr('opacity', 1);
 
-      const collapsedLegend = svg
+    let legendVisible = false;
+    const collapsedLegend = svg
       .append('g')
       .attr('class', 'collapsed-legend')
       .attr('transform', `translate(${width - margin.right},${margin.top})`)
@@ -182,7 +193,12 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('font-size', '9px')
       .style('fill', 'black');
 
-    const legend = svg.append('g').attr('class', 'legend').attr('transform', `translate(${width - margin.right - 150}, ${margin.top})`).style('display', 'none');
+    const legend = svg
+      .append('g')
+      .attr('class', 'legend')
+      .attr('transform', `translate(${width - margin.right - 150}, ${margin.top})`)
+      .style('opacity', 0)
+      .style('display', 'none');
 
     const legendItems = legend
       .selectAll('.legend-item')
@@ -191,35 +207,47 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .append('g')
       .attr('class', 'legend-item')
       .attr('transform', (d, i) => `translate(0, ${i * 20})`)
-      .on('mouseover', handleLegendMouseOver) // Add mouseover event
-      .on('mouseout', handleLegendMouseOut); // Add mouseout event
+      .on('mouseover', handleLegendMouseOver)
+      .on('mouseout', handleLegendMouseOut);
+
+    // legendItems
+    //   .attr('opacity', 0)
+    //   .transition()
+    //   .duration(500)
+    //   .attr('opacity', 1);
 
     function handleLegendMouseOver(event, parameter) {
-        circles
-            .filter((datum) => datum.parameter === parameter)
-            .attr('opacity', 0.7)
-            .attr('r', 7);
+      circles
+        .filter((datum) => datum.parameter === parameter)
+        .transition()
+        .duration(50)
+        .attr('opacity', 0.7)
+        .attr('r', 7);
 
-        circles
-            .filter((datum) => datum.parameter !== parameter)
-            .attr('opacity', 0);
+      circles
+        .filter((datum) => datum.parameter !== parameter)
+        .transition()
+        .duration(50)
+        .attr('opacity', 0);
     }
 
     function handleLegendMouseOut() {
-        circles.attr('opacity', 1).attr('r', 5);
+      circles
+        .transition()
+        .duration(500)
+        .attr('opacity', 1)
+        .attr('r', 5);
     }
-
 
     legendItems
       .append('rect')
       .attr('width', 15)
       .attr('height', 15)
       .attr('fill', (d) => colorScale(d))
-      .style('opacity', 0) // Start with opacity 0 for animation
-
-      .transition() // Apply a transition for smooth opacity change
-      .duration(1000) // Animation duration in milliseconds
-      .style('opacity', 1); // End with opacity 1
+      // .attr('opacity', 0)
+      // .transition()
+      // .duration(500)
+      // .attr('opacity', 1);
 
     legendItems
       .append('text')
@@ -228,15 +256,31 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('dy', '0.35em')
       .text((d) => d)
       .attr('font-size', '9px')
-      .style('opacity', 0) // Start with opacity 0 for animation
-      .transition() // Apply a transition for smooth opacity change
-      .duration(1000) // Animation duration in milliseconds
+      // .style('opacity', 0)
+      // .transition()
+      // .duration(500)
       .style('opacity', 1);
 
     function toggleLegend() {
-      const legendDisplay = legend.style('display');
-      legend.style('display', legendDisplay === 'none' ? 'block' : 'none');
+      legendVisible = !legendVisible;
+
+      legend
+        .transition()
+        .duration(500)
+        .style('opacity', legendVisible ? 1 : 0)
+        .on('start', function () {
+          if (legendVisible) {
+            legend.style('display', 'block');
+          }
+        })
+        .on('end', function () {
+          if (!legendVisible) {
+            legend.style('display', 'none');
+          }
+        });
     }
+
+
 
     const chartTitle = svg
         .append('text')
@@ -246,14 +290,18 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
         .style('text-anchor', 'middle')
         .style('font-size', '16px')
         .style('font-weight', 'bold')
-        .text('Scatter Plot of PC1 and PC2');
+        .text('Scatter Plot of PC1 and PC2')
+        .attr('opacity', 0)
+        .transition()
+        .duration(500)
+        .attr('opacity', 1);
 
     const axisTooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0)
-    .style("position", "absolute")
-    .style("pointer-events", "none")
-    .attr("id", "axis-tooltip");
+      .attr("class", "tooltip")
+      .style("opacity", 0)
+      .style("position", "absolute")
+      .style("pointer-events", "none")
+      .attr("id", "axis-tooltip");
 
     let tooltipVisible = false;
     let currentAxis = null;

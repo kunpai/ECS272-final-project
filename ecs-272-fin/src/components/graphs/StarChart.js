@@ -489,8 +489,10 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("x2", x2)
                 .attr("y2", y2)
                 .attr("stroke", "gray")
+                .attr("opacity", 0)
                 .transition()
-                .duration(500);
+                .duration(500)
+                .attr("opacity", 1);
 
             svg.append("text")
                 .attr("x", x2)
@@ -530,7 +532,7 @@ const StarChart = ({ parameter, view, setView }) => {
                                 microbenchTooltip.transition()
                                     .duration(200)
                                     .style("opacity", 0);
-                            }, 10000);
+                            }, 5000);
                     }
                 })
                 .on("mouseout", function () {
@@ -605,12 +607,21 @@ const StarChart = ({ parameter, view, setView }) => {
                     colorIndex++;
 
                     // Append the filled polygon
-                    svg.append("polygon")
+                    var polygon = svg.append("polygon")
                         .attr("points", polygonPoints)
                         .attr("fill", elementColor)
                         .attr("stroke", elementColor)
                         .attr("class", "polygon")
-                        .attr("data-key", key);
+                        .attr("data-key", key)
+                        .attr("opacity", 0);
+                    // Add animation to the polygon
+                    polygon.transition()
+                    .duration(500)
+                    .attr("opacity", 1);
+                    // Set the duration of the animation in milliseconds
+                    // .attr("points", updatedPolygonPoints) // Change to the new set of points
+                    // .attr("fill", updatedElementColor) // Change to the new fill color
+                    // .attr("stroke", updatedElementColor); // Change to the new stroke color
                 }
             }
 
@@ -633,7 +644,12 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("x", totalLegendWidth / 2 - columnWidth / 4) // Adjusted x-coordinate
                 .attr("y", -10)
                 .text("Values")
-                .attr("text-anchor", "middle");
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr('opacity', 0)
+                .transition()
+                .duration(500)
+                .attr('opacity', 1);
 
             var legendLabels = legend.selectAll("g")
                 .data(legendData)
@@ -655,7 +671,14 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("height", 20)
                 .attr("fill", function (d, i) {
                     return colors[i % colors.length];
-                });
+                })
+                .attr("stroke", function (d, i) {
+                    return colors[i % colors.length];
+                })
+                .attr("opacity", 0)
+                .transition()
+                .duration(500)
+                .attr("opacity", 1);
 
             legendLabels.append("text")
                 .attr("x", 30)
@@ -664,7 +687,11 @@ const StarChart = ({ parameter, view, setView }) => {
                 .text(function (d) {
                     return d.split("-")[1];
                 })
-                .attr("fill", "black");
+                .attr("fill", "black")
+                .attr("opacity", 0)
+                .transition()
+                .duration(500)
+                .attr("opacity", 1);
 
 
             svg.append("text")
@@ -676,7 +703,11 @@ const StarChart = ({ parameter, view, setView }) => {
                     const titleLength = parameter.length;
                     return Math.min(maxFontSize, 1.5* svgWidth / titleLength) + "px";
                 })
-                .text(parameter);
+                .text(parameter)
+                .attr("opacity", 0)
+                .transition()
+                .duration(500)
+                .attr("opacity", 1);
 
 
             addListener(svg, data, keyText, ".polygon", view);
