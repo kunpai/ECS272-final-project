@@ -87,7 +87,11 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
             .attr('text-anchor', 'middle')
             .style('font-size', '16px')
             .attr('font-weight', 'bold')
-            .text(parameter);
+            .text(parameter)
+            .attr('opacity', 0)
+            .transition()
+            .duration(500)
+            .attr('opacity', 1);
 
         svg.append('text')
             .attr('x', width / 2)
@@ -95,7 +99,11 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
             .attr('text-anchor', 'middle')
             .style('font-size', '16px')
             .attr('font-weight', 'bold')
-            .text(view.split('-').slice(-1)[0] + ' ' + view.split('-').slice(-3)[0]);
+            .text(view.split('-').slice(-1)[0] + ' ' + view.split('-').slice(-3)[0])
+            .attr('opacity', 0)
+            .transition()
+            .duration(500)
+            .attr('opacity', 1);
 
         const xScale = d3.scaleBand()
             .domain(data.map(d => d.Value))
@@ -114,11 +122,19 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
             .call(xAxis)
             .selectAll('text')
             .attr('transform', 'rotate(-45)')
-            .attr('text-anchor', 'end');
+            .attr('text-anchor', 'end')
+            .attr('opacity', 0)
+            .transition()
+            .duration(500)
+            .attr('opacity', 1);
 
         svg.append('g')
             .attr('transform', `translate(${margin.left}, 0)`)
-            .call(yAxis);
+            .call(yAxis)
+            .attr('opacity', 0)
+            .transition()
+            .duration(500)
+            .attr('opacity', 1);
 
         const bars = svg.selectAll('rect')
             .data(data)
