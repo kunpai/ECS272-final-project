@@ -508,8 +508,13 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("text-anchor", x2 > centerX ? "start" : "end")
                 .attr("alignment-baseline", "middle")
                 .attr("fill", "black")
-                .style("cursor", "pointer")
+                .style("cursor", function () {
+                    return view.split("-").length > 3 ? "default" : "pointer";
+                })
                 .on("click", function (event) {
+                    if (view.split("-").length > 3) {
+                        return;
+                    }
                     var clickedElement = d3.select(this).text();
                     clickedElement = clickedElement.split(" ").join("_");
                     setView(view + "-" + clickedElement);
@@ -532,7 +537,7 @@ const StarChart = ({ parameter, view, setView }) => {
                                 microbenchTooltip.transition()
                                     .duration(200)
                                     .style("opacity", 0);
-                            }, 5000);
+                            }, 2000);
                     }
                 })
                 .on("mouseout", function () {

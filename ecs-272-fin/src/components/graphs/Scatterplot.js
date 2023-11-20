@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
 const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
@@ -24,7 +24,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
 
   const drawChart = () => {
     // Set up the dimensions of the SVG container
-    const width = window.innerWidth/(4/3);
+    const width = window.innerWidth/(4/3) - 200;
     const height = window.innerHeight/(4/3);
     const margin = { top: 20, right: 20, bottom: 60, left: 40 };
 
@@ -97,7 +97,6 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('cx', (d) => xScale(d.PC1))
       .attr('cy', (d) => yScale(d.PC2))
       .attr('r', 0)
-      // .attr('r', 5) // Radius of the circles
       .attr('fill', (d) => colorScale(d.parameter))
       .attr('class', (d) => d.parameter.replace(/\./g, '-').replace(/[^a-zA-Z0-9-_]/g, ''))
       .on('mouseenter', handleMouseEnter)
@@ -159,7 +158,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
 
     const yAxisLabel = svg
       .append('text')
-      .attr('transform', `translate(${-margin.left + 10},${height / 2}) rotate(-90)`)
+      .attr('transform', `translate(${-margin.left + 15},${height / 2}) rotate(-90)`)
       .style('text-anchor', 'middle')
       .text('PC2')
       .style("cursor", "pointer")
