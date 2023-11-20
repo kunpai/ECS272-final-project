@@ -9,6 +9,50 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
     const [showBaseline, setShowBaseline] = useState(false);
     const [baselineData, setBaselineData] = useState([]);
     const [trimmedData, setTrimmedData] = useState([]);
+    const [baselineDataAvailable, setBaselineDataAvailable] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                console.log(baselineData)
+                const csvData = await getCorrectData('baseline');
+                console.log(csvData);
+                const filteredData = csvData
+                    .filter(d =>
+                        d.Benchmarks.toLowerCase() === view.split('-').slice(-1)[0].toLowerCase()
+                    )
+                    .map(d => {
+                        const filteredColumns = Object.keys(d)
+                            .filter(key => {
+                                // Include the columns you want to keep, e.g., 'Value'
+                                const allowedColumns = [view.split('-')[1]];
+                                return allowedColumns.includes(key);
+                            })
+                            .reduce((obj, key) => {
+                                obj[view.split('-').slice(-1)[0].toLowerCase()] = d[key];
+                                return obj;
+                            }, {});
+                        if (Object.keys(filteredColumns).length !== 0) {
+                            filteredColumns['Value'] = 'Baseline';
+                            console.log(filteredColumns);
+                            return { ...filteredColumns };
+                        } else {
+                            return null;
+                        }
+                    })
+                    .filter(filteredItem => filteredItem !== null);
+                setBaselineData(filteredData);
+                if (filteredData.length === 0) {
+                    setBaselineDataAvailable(false);
+                } else {
+                    setBaselineDataAvailable(true);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, [view]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,68 +98,26 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
     };
 
     useEffect(() => {
+        let trimmedData = data
+        .filter(d => d.Parameter === parameter)
+        .map(d => {
+          const filteredColumns = Object.keys(d)
+            .filter(key => {
+              // Include the columns you want to keep, e.g., 'Value'
+              const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
+              return allowedColumns.includes(key);
+            })
+            .reduce((obj, key) => {
+              obj[key] = d[key];
+              return obj;
+            }, {});
+          return { ...filteredColumns };
+        });
         if (showBaseline) {
-            const fetchData = async () => {
-            try {
-                const csvData = await getCorrectData('baseline');
-                setBaselineData(csvData);
-                const baselineStat = csvData.filter(d =>
-                    d.Benchmarks.toLowerCase() === view.split('-').slice(-1)[0].toLowerCase()
-                ).map(d => {
-                    const filteredColumns = Object.keys(d)
-                        .filter(key => {
-                            // Include the columns you want to keep, e.g., 'Value'
-                            const allowedColumns = [view.split('-')[1]];
-                            return allowedColumns.includes(key);
-                        })
-                        .reduce((obj, key) => {
-                            obj[view.split('-').slice(-1)[0].toLowerCase()] = d[key];
-                            return obj;
-                        }, {});
-                    filteredColumns['Value'] = 'Baseline';
-                    return { ...filteredColumns };
-                });
-                console.log(baselineStat);
-                let trimmedData = data
-                .filter(d => d.Parameter === parameter)
-                .map(d => {
-                  const filteredColumns = Object.keys(d)
-                    .filter(key => {
-                      // Include the columns you want to keep, e.g., 'Value'
-                      const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
-                      return allowedColumns.includes(key);
-                    })
-                    .reduce((obj, key) => {
-                      obj[key] = d[key];
-                      return obj;
-                    }, {});
-                  return { ...filteredColumns };
-                });
-                trimmedData.push(...baselineStat);
-                setTrimmedData(trimmedData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-            };
-            fetchData();
+            trimmedData.push(...baselineData);
+            setTrimmedData(trimmedData);
         } else {
-            setTrimmedData(
-                data
-                .filter(d => d.Parameter === parameter)
-                .map(d => {
-                    const filteredColumns = Object.keys(d)
-                    .filter(key => {
-                        // Include the columns you want to keep, e.g., 'Value'
-                        const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
-                        return allowedColumns.includes(key);
-                    })
-                    .reduce((obj, key) => {
-                        obj[key] = d[key];
-                        return obj;
-                    }, {});
-                    return { ...filteredColumns };
-                })
-            );
+            setTrimmedData(trimmedData);
         }
     }, [showBaseline]);
 
@@ -259,7 +261,7 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
           <Button variant="primary" onClick={goBack}>Back</Button>
           {ref && <svg ref={ref} />}
           <div style={{ marginTop: '10px' }}>
-            <FormCheck type="checkbox" id="baselineCheckbox" checked={showBaseline} onChange={handleBaselineToggle} label="Baseline" style={{ display: 'inline-block' }} />
+            <FormCheck type="checkbox" id="baselineCheckbox" checked={showBaseline} onChange={handleBaselineToggle} label="Baseline" style={{ display: 'inline-block' }} disabled={!baselineDataAvailable} />
           </div>
         </div>
     );
