@@ -32,7 +32,6 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     const pc1Extent = d3.extent(data, (d) => d.PC1);
     const pc2Extent = d3.extent(data, (d) => d.PC2);
     const uniqueParameters = [...new Set(data.map((d) => d.parameter))];
-    console.log(uniqueParameters);
 
     const distinctColors = [
       '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -143,6 +142,11 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
         setView('overview');
     }
 
+    function handleLegendClick(d) {
+        setParameter(d);
+        setView('overview');
+    }
+
     // Add labels for the axes and make them clickable
     const xAxisLabel = svg
       .append('text')
@@ -207,13 +211,8 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('class', 'legend-item')
       .attr('transform', (d, i) => `translate(0, ${i * 20})`)
       .on('mouseover', handleLegendMouseOver)
-      .on('mouseout', handleLegendMouseOut);
-
-    // legendItems
-    //   .attr('opacity', 0)
-    //   .transition()
-    //   .duration(500)
-    //   .attr('opacity', 1);
+      .on('mouseout', handleLegendMouseOut)
+      .on('click', (event, d) => handleLegendClick(d));
 
     function handleLegendMouseOver(event, parameter) {
       circles
@@ -242,11 +241,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .append('rect')
       .attr('width', 15)
       .attr('height', 15)
-      .attr('fill', (d) => colorScale(d))
-      // .attr('opacity', 0)
-      // .transition()
-      // .duration(500)
-      // .attr('opacity', 1);
+      .attr('fill', (d) => colorScale(d));
 
     legendItems
       .append('text')
@@ -254,11 +249,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('y', 10)
       .attr('dy', '0.35em')
       .text((d) => d)
-      .attr('font-size', '9px')
-      // .style('opacity', 0)
-      // .transition()
-      // .duration(500)
-      .style('opacity', 1);
+      .attr('font-size', '9px');
 
     function toggleLegend() {
       legendVisible = !legendVisible;
@@ -306,7 +297,6 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     let currentAxis = null;
 
     function handleAxisLabelClick(axis) {
-        console.log(axis);
         // axisTooltip.transition()
         //     .duration(200)
         //     .style("opacity", 0.9);
