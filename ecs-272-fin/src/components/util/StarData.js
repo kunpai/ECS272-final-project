@@ -63,6 +63,8 @@ const getCorrectData = async (view) => {
         return await readCSV('/data/Data_Dependency/Data_Dependency-Branches.csv');
     } else if (view.includes('overview-Branches') && view.includes('Store_Intense')) {
         return await readCSV('/data/Store_Intense/Store_Intense-Branches.csv');
+    } else if (view === 'baseline') {
+        return await readCSV('/data/baseline-stats.csv');
     }
     return [];
 }

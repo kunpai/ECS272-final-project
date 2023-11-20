@@ -1,16 +1,37 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import getCorrectData from '../util/StarData';
-import { Button } from 'react-bootstrap';
+import { Button, FormCheck } from 'react-bootstrap';
 
 const ParameterBarChart = ({ parameter, view, setView }) => {
     const ref = useRef();
     const [data, setData] = useState([]);
+    const [showBaseline, setShowBaseline] = useState(false);
+    const [baselineData, setBaselineData] = useState([]);
+    const [trimmedData, setTrimmedData] = useState([]);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const csvData = await getCorrectData(view);
                 setData(csvData);
+                setTrimmedData(
+                    csvData
+                    .filter(d => d.Parameter === parameter)
+                    .map(d => {
+                        const filteredColumns = Object.keys(d)
+                        .filter(key => {
+                            // Include the columns you want to keep, e.g., 'Value'
+                            const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
+                            return allowedColumns.includes(key);
+                        })
+                        .reduce((obj, key) => {
+                            obj[key] = d[key];
+                            return obj;
+                        }, {});
+                        return { ...filteredColumns };
+                    })
+                );
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -28,21 +49,75 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
         }
     };
 
-    const trimmedData = data
-    .filter(d => d.Parameter === parameter)
-    .map(d => {
-        const filteredColumns = Object.keys(d)
-        .filter(key => {
-            // Include the columns you want to keep, e.g., 'Value'
-            const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
-            return allowedColumns.includes(key);
-        })
-        .reduce((obj, key) => {
-            obj[key] = parseFloat(d[key]);
-            return obj;
-        }, {});
-        return { ...filteredColumns };
-    });
+    const handleBaselineToggle = () => {
+        setShowBaseline(!showBaseline);
+    };
+
+    useEffect(() => {
+        if (showBaseline) {
+            const fetchData = async () => {
+            try {
+                const csvData = await getCorrectData('baseline');
+                setBaselineData(csvData);
+                const baselineStat = csvData.filter(d =>
+                    d.Benchmarks.toLowerCase() === view.split('-').slice(-1)[0].toLowerCase()
+                ).map(d => {
+                    const filteredColumns = Object.keys(d)
+                        .filter(key => {
+                            // Include the columns you want to keep, e.g., 'Value'
+                            const allowedColumns = [view.split('-')[1]];
+                            return allowedColumns.includes(key);
+                        })
+                        .reduce((obj, key) => {
+                            obj[view.split('-').slice(-1)[0].toLowerCase()] = d[key];
+                            return obj;
+                        }, {});
+                    filteredColumns['Value'] = 'Baseline';
+                    return { ...filteredColumns };
+                });
+                console.log(baselineStat);
+                let trimmedData = data
+                .filter(d => d.Parameter === parameter)
+                .map(d => {
+                  const filteredColumns = Object.keys(d)
+                    .filter(key => {
+                      // Include the columns you want to keep, e.g., 'Value'
+                      const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
+                      return allowedColumns.includes(key);
+                    })
+                    .reduce((obj, key) => {
+                      obj[key] = d[key];
+                      return obj;
+                    }, {});
+                  return { ...filteredColumns };
+                });
+                trimmedData.push(...baselineStat);
+                setTrimmedData(trimmedData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            };
+            fetchData();
+        } else {
+            setTrimmedData(
+                data
+                .filter(d => d.Parameter === parameter)
+                .map(d => {
+                    const filteredColumns = Object.keys(d)
+                    .filter(key => {
+                        // Include the columns you want to keep, e.g., 'Value'
+                        const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
+                        return allowedColumns.includes(key);
+                    })
+                    .reduce((obj, key) => {
+                        obj[key] = d[key];
+                        return obj;
+                    }, {});
+                    return { ...filteredColumns };
+                })
+            );
+        }
+    }, [showBaseline]);
 
     useEffect(() => {
         if (trimmedData.length > 0) {
@@ -70,8 +145,10 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
         const svg = d3.select(ref.current);
         const width = window.innerWidth/(4/1);
         const height = window.innerHeight/(4/3);
-        const margin = { top: 60, right: 20, bottom: 20, left: 40 };
+        const margin = { top: 60, right: 20, bottom: 60, left: 40 };
         svg.selectAll('*').remove();
+
+        data.sort((a, b) => d3.ascending(a.Value, b.Value));
 
         svg.attr('width', width);
         svg.attr('height', height);
@@ -151,12 +228,18 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
             .attr('height', d => yScale(0) - yScale(d[view.split('-').slice(-1)[0].toLowerCase()]));
 
         bars.on('mouseover', (event, d) => {
-            const value = d[view.split('-').slice(-1)[0].toLowerCase()];
+            const rawValue = d[view.split('-').slice(-1)[0].toLowerCase()];
+            let value;
+
+            if (Number.isInteger(rawValue)) {
+                value = rawValue.toString();
+            } else {
+                value = parseFloat(rawValue).toFixed(3).replace(/\.?0+$/, '');
+            }
+
             const xPosition = parseFloat(d3.select(event.currentTarget).attr('x')) + xScale.bandwidth() / 2;
             const yPosition = parseFloat(d3.select(event.currentTarget).attr('y')) / 2 + height / 2;
-            console.log('X:', xPosition);
-            console.log('Y:', yPosition);
-            console.log('Value:', value);
+
             svg.append('text')
                 .attr('id', 'tooltip')
                 .attr('x', xPosition)
@@ -172,11 +255,12 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
     }
 
     return (
-        <div>
-            <Button variant="primary" onClick={goBack}>Back</Button>
-            {ref && (
-                <svg ref={ref} />
-            )}
+        <div style={{ textAlign: 'center' }}>
+          <Button variant="primary" onClick={goBack}>Back</Button>
+          {ref && <svg ref={ref} />}
+          <div style={{ marginTop: '10px' }}>
+            <FormCheck type="checkbox" id="baselineCheckbox" checked={showBaseline} onChange={handleBaselineToggle} label="Baseline" style={{ display: 'inline-block' }} />
+          </div>
         </div>
     );
 };
