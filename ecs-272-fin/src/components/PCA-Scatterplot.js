@@ -51,7 +51,7 @@ export default function PCA_Scatterplot() {
                     <ParameterBarChart parameter={parameter} view={view} setView={setView}/>
                 )}
                 {tooltipAxis && (
-                    <Tooltip axis={tooltipAxis} data={tooltipAxis === 'PC1' ? pc1 : pc2} width={window.innerWidth} height={window.innerHeight} margin={0} />
+                    <Tooltip axis={tooltipAxis} data={tooltipAxis === 'PC1' ? pc1 : pc2} />
                 )}
             </div>
         </>
