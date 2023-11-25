@@ -722,7 +722,25 @@ const StarChart = ({ parameter, view, setView }) => {
 
     return (
         <div>
-            <Button variant="primary" onClick={goBack}>Back</Button>
+            { view.split("-").length > 1 &&
+                <Button variant="primary" onClick={goBack}>Back</Button>
+            }
+            {/* <svg
+        onClick={goBack}
+        width="50"
+        height="50"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ cursor: 'pointer', animation: 'pulse 1s infinite' }}
+    >
+        <path d="M14.25 20L5.25 12L14.25 4" />
+        <path d="M19.25 12H5.25" />
+    </svg> */}
             {svgRef && (
                 <svg ref={svgRef} />
             )}
