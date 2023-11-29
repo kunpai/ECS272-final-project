@@ -144,6 +144,7 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
     }, [trimmedData]);
 
     const drawChart = (data) => {
+        d3.selectAll('.tooltip').remove();
         const svg = d3.select(ref.current);
         const width = window.innerWidth/(4/1);
         const height = window.innerHeight/(4/3);
