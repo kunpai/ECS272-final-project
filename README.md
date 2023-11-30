@@ -95,7 +95,7 @@ The data collected from a run of the microbenchmarks is in the form of a JSON fi
 
 ## Visualization
 
-The main visualization is a PCA 2D scatterplot. The scatterplot is a 2D reduction of the 5D data (6 groups of stats) for each microbenchmark. Each axis of the scatterplot is a principal component of the data. Clicking an axis renders a bar chart showing the constituent components that make up the principal component. Clicking the axis again hides the bar chart. It also times out after 10 seconds.
+The main visualization is a PCA 2D scatterplot. The scatterplot is a 2D reduction of the 5D data (5 groups of stats) for each microbenchmark. Each axis of the scatterplot is a principal component of the data. Clicking an axis renders a bar chart showing the constituent components that make up the principal component. Clicking the axis again hides the bar chart. It also times out after 10 seconds.
 
 The scatterplot is colored by the group of parameters and every possible value for each parameter. The scatterplot is interactive, and hovering over a point shows the parameter and value for that point, while also highlighting all the points with the same parameter but different values. Zooming and panning is also enabled to allow for better viewing of the data. The legend is interactive, and can be viewed or hidden by clicking on the "Legend" button. Hovering over a legend item highlights all the points with the same parameter but different values.
 
