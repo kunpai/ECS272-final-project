@@ -81,8 +81,8 @@ function addListener(svg, data, keyText, className, view) {
             var control = "Avg. Control: " + data[key].Control;
             var memory = "Avg. Memory: " + data[key].Memory;
             var execution = "Avg. Execution: " + data[key].Execution;
-            var data_dependency = "Avg. Data Dependency: "+ data[key].Data_Dependency;
-            var store_intense = "Avg. Store Intense: " + data[key].Store_Intense;
+            var data_dependency = "Avg. Data Dep: "+ data[key].Data_Dependency;
+            var store_intense = "Avg. Store Int: " + data[key].Store_Intense;
 
             keyText.text("");
             // keyText.append("tspan").text(parameter);
@@ -424,7 +424,7 @@ const StarChart = ({ parameter, view, setView }) => {
             .attr("height", svgHeight);
 
         var centerX = svgWidth / 2;
-        var centerY = svgHeight / 2;
+        var centerY = svgHeight / 2 + 50;
         centerX = Math.round(centerX * 10) / 10;
         centerY = Math.round(centerY * 10) / 10;
 
@@ -554,15 +554,15 @@ const StarChart = ({ parameter, view, setView }) => {
 
             var keyText = svg.append("text")
                 .attr("x", 100)
-                .attr("y", 40)
+                .attr("y", svgHeight - 100)
                 .text("")
                 .attr("text-anchor", "end")
                 .attr("font-size", "10px");
 
             rectangle = svg.append("rect")
                 .attr("x", 0)
-                .attr("y", 40)
-                .attr("width", 170)
+                .attr("y", svgHeight - 100)
+                .attr("width", 180)
                 .attr("height", 120)
                 .attr("fill", "transparent")
                 .attr("stroke", "transparent")
@@ -631,7 +631,7 @@ const StarChart = ({ parameter, view, setView }) => {
             }
 
             var legendX = svgWidth - 150;
-            var legendY = svgHeight - 150;
+            var legendY = svgHeight - 100;
             var legendSpacing = 25;
             var maxLegendItemsPerColumn = 4;
             var columnWidth = 100;
@@ -699,21 +699,29 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("opacity", 1);
 
 
-            svg.append("text")
+            const titleContent = view === "overview" ? [parameter] : [parameter, ...view.split("-").slice(1)];
+
+            const title = svg.append("text")
                 .attr("x", svgWidth / 3 + 50)
                 .attr("y", 30)
                 .attr("text-anchor", "middle")
                 .attr("font-size", function(d) {
                     const maxFontSize = 18;
-                    const titleLength = parameter.length;
-                    return Math.min(maxFontSize, 1.5* svgWidth / titleLength) + "px";
+                    const titleLength = Math.max(...titleContent.map(line => line.length));
+                    return Math.min(maxFontSize, 1.5 * svgWidth / titleLength) + "px";
                 })
-                .text(parameter)
-                .attr("opacity", 0)
-                .transition()
+                .attr("opacity", 0);
+
+            title.selectAll("tspan")
+                .data(titleContent)
+                .enter().append("tspan")
+                .attr("x", svgWidth / 3 + 50)
+                .attr("dy", "1.2em") // Adjust this value for line spacing
+                .text(function(d) { return d; });
+
+            title.transition()
                 .duration(500)
                 .attr("opacity", 1);
-
 
             addListener(svg, data, keyText, ".polygon", view);
             addListener(svg, data, keyText, ".legend-label", view);
@@ -722,9 +730,20 @@ const StarChart = ({ parameter, view, setView }) => {
 
     return (
         <div>
-            { view.split("-").length > 1 &&
+            <Button
+            variant="primary"
+            onClick={goBack}
+            disabled={view.split("-").length <= 1}
+            style={{
+                backgroundColor: view.split("-").length <= 1 ? 'grey' : '',
+                borderColor: view.split("-").length <= 1 ? 'grey' : ''
+              }}
+            >
+            Back
+            </Button>
+            {/* { view.split("-").length > 1 &&
                 <Button variant="primary" onClick={goBack}>Back</Button>
-            }
+            } */}
             {/* <svg
         onClick={goBack}
         width="50"
