@@ -419,9 +419,12 @@ const StarChart = ({ parameter, view, setView }) => {
         d3.select(svgRef.current).selectAll("*").remove();
         var svgWidth = window.innerWidth/(4/1);
         var svgHeight = window.innerHeight/(4/3);
+        var margin = { bottom: 10 };
         var svg = d3.select(svgRef.current)
             .attr("width", svgWidth)
-            .attr("height", svgHeight);
+            .attr("height", svgHeight)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var centerX = svgWidth / 2;
         var centerY = svgHeight / 2 + 50;
@@ -528,6 +531,7 @@ const StarChart = ({ parameter, view, setView }) => {
                         microbenchTooltip.transition()
                             .duration(200)
                             .style("opacity", .9);
+                        microbenchTooltip.style("z-index", 1000);
 
                         microbenchTooltip.html(microbenchMeaning[label])
                             .style("left", `${svgWidth*3}px`)
@@ -544,6 +548,7 @@ const StarChart = ({ parameter, view, setView }) => {
                     microbenchTooltip.transition()
                     .duration(200)
                     .style("opacity", 0);
+                    microbenchTooltip.style("z-index", -1);
                 })
                 .transition()
                 .duration(500)
@@ -554,14 +559,14 @@ const StarChart = ({ parameter, view, setView }) => {
 
             var keyText = svg.append("text")
                 .attr("x", 100)
-                .attr("y", svgHeight - 100)
+                .attr("y", 100)
                 .text("")
                 .attr("text-anchor", "end")
                 .attr("font-size", "10px");
 
             rectangle = svg.append("rect")
                 .attr("x", 0)
-                .attr("y", svgHeight - 100)
+                .attr("y", 100)
                 .attr("width", 180)
                 .attr("height", 120)
                 .attr("fill", "transparent")
