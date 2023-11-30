@@ -20,11 +20,28 @@ const BarChart = ({ data }) => {
       .domain(data.map(d => d.feature))
       .padding(0.2);
 
+    const y = d3.scaleLinear()
+      .domain([d3.min(data, d => Math.min(0, d.component)), d3.max(data, d => Math.max(0, d.component))])
+      .range([height, 0]);
+
+    svg.selectAll("mybar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("x", d => x(d.feature))
+      .attr("y", d => (d.component >= 0) ? y(d.component) : y(0))
+      .attr("width", x.bandwidth())
+      .attr("height", d => Math.abs(y(0) - y(d.component)))
+      .attr("fill", "#69b3a2")
+      .transition()
+      .duration(500)
+      .attr("y", d => (d.component >= 0) ? y(d.component) : y(0));
+
     svg.append("g")
-      .attr("transform", `translate(0,${height})`)
+      .attr("transform", `translate(0,${y(0)})`)
       .call(d3.axisBottom(x))
       .selectAll("text")
-      .attr("transform", "translate(-10,0)rotate(-30)")
+      .attr("transform", "translate(-8,0)rotate(-30)")
       .style("text-anchor", "end")
       .text(d => {
         const [prefix, suffix] = d.split('_');
@@ -35,10 +52,6 @@ const BarChart = ({ data }) => {
       .duration(500)
       .attr("opacity", 1);
 
-    const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.component)])
-      .range([height, 0]);
-
     svg.append("g")
       .call(d3.axisLeft(y))
       .attr("opacity", 0)
@@ -46,41 +59,28 @@ const BarChart = ({ data }) => {
       .duration(500)
       .attr("opacity", 1);
 
-      svg.selectAll("mybar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", d => x(d.feature))
-      .attr("y", height)
-      .attr("width", x.bandwidth())
-      .attr("height", 0)
-      .attr("fill", "#69b3a2")
+    svg.append("text")
+      .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+      .style("text-anchor", "middle")
+      .text("Stat")
+      .attr("opacity", 0)
       .transition()
       .duration(500)
-      .attr("y", d => y(d.component))
-      .attr("height", d => height - y(d.component));
+      .attr("opacity", 1);
 
     svg.append("text")
-    .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
-    .style("text-anchor", "middle")
-    .text("Stat")
-    .attr("opacity", 0)
-    .transition()
-    .duration(500)
-    .attr("opacity", 1);
-
-  svg.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 0 - margin.left + 20)
-    .attr("x", 0 - (height / 2))
-    .attr("dy", "1em")
-    .style("text-anchor", "middle")
-    .text("Effect")
-    .attr("opacity", 0)
-    .transition()
-    .duration(500)
-    .attr("opacity", 1);
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left + 20)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Effect")
+      .attr("opacity", 0)
+      .transition()
+      .duration(500)
+      .attr("opacity", 1);
   }, [data, height, margin.left, margin.top, width]);
+
 
   return <svg ref={ref}></svg>;
 };
