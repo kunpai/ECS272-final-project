@@ -89,7 +89,6 @@ const Tooltip = ({ axis, data }) => {
   const tooltipRootId = 'tooltip-root';
   let tooltipRoot = document.getElementById(tooltipRootId);
 
-  // Create the tooltip root container if it doesn't exist
   if (!tooltipRoot) {
     tooltipRoot = document.createElement('div');
     tooltipRoot.id = tooltipRootId;
@@ -99,13 +98,9 @@ const Tooltip = ({ axis, data }) => {
   const tooltipStyle = {
     position: 'absolute',
     padding: '20px',
-    // width: `${width}px`,
-    // height: `${height}px`,
-    // margin: `${margin}px`,
   };
 
   useEffect(() => {
-    // Cleanup function to remove the container when the component is unmounted
     return () => {
       if (tooltipRoot) {
         document.body.removeChild(tooltipRoot);

@@ -32,7 +32,6 @@ function addListener(svg, data, keyText, className, view) {
                 selectedPolygon.attr("pointer-events", "none");
                 svg.node().appendChild(selectedPolygon.node());
 
-                var parameter = "Parameter: "+ key.split("-")[0];
                 var value = "Value: " + key.split("-")[1];
                 var instructions = "Avg. Instructions: " + data[key].Instructions;
                 var cycles = "Avg. Cycles: " + data[key].Cycles;
@@ -41,7 +40,6 @@ function addListener(svg, data, keyText, className, view) {
                 var branches = "Avg. Branches: " + data[key].Branches;
 
                 keyText.text("");
-                // keyText.append("tspan").text(parameter);
                 keyText.append("tspan").text(value);
                 keyText.append("tspan").text(instructions);
                 keyText.append("tspan").text(cycles);
@@ -76,7 +74,6 @@ function addListener(svg, data, keyText, className, view) {
             selectedPolygon.attr("pointer-events", "none");
             svg.node().appendChild(selectedPolygon.node());
 
-            var parameter = "Parameter: "+ key.split("-")[0];
             var value = "Value: " + key.split("-")[1];
             var control = "Avg. Control: " + data[key].Control;
             var memory = "Avg. Memory: " + data[key].Memory;
@@ -85,7 +82,6 @@ function addListener(svg, data, keyText, className, view) {
             var store_intense = "Avg. Store Int: " + data[key].Store_Intense;
 
             keyText.text("");
-            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(control);
             keyText.append("tspan").text(memory);
@@ -121,13 +117,11 @@ function addListener(svg, data, keyText, className, view) {
             selectedPolygon.attr("pointer-events", "none");
             svg.node().appendChild(selectedPolygon.node());
 
-            var parameter = "Parameter: "+ key.split("-")[0];
             var value = "Value: " + key.split("-")[1];
             var stl2 = "STL2: " + data[key].STL2;
             var stc = "STc: " + data[key].STc;
 
             keyText.text("");
-            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(stl2);
             keyText.append("tspan").text(stc);
@@ -159,7 +153,6 @@ function addListener(svg, data, keyText, className, view) {
             selectedPolygon.attr("pointer-events", "none");
             svg.node().appendChild(selectedPolygon.node());
 
-            var parameter = "Parameter: "+ key.split("-")[0];
             var value = "Value: " + key.split("-")[1];
             var cs1 = "CS1: " + data[key].CS1;
             var crf = "CRf: " + data[key].CRf;
@@ -172,7 +165,6 @@ function addListener(svg, data, keyText, className, view) {
             var cci = "CCI: " + data[key].CCI;
 
             keyText.text("");
-            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(cs1);
             keyText.append("tspan").text(crf);
@@ -211,7 +203,6 @@ function addListener(svg, data, keyText, className, view) {
             selectedPolygon.attr("pointer-events", "none");
             svg.node().appendChild(selectedPolygon.node());
 
-            var parameter = "Parameter: "+ key.split("-")[0];
             var value = "Value: " + key.split("-")[1];
             var ml2 = "ML2: " + data[key].ML2;
             var mc = "MC: " + data[key].MC;
@@ -263,7 +254,6 @@ function addListener(svg, data, keyText, className, view) {
             selectedPolygon.attr("pointer-events", "none");
             svg.node().appendChild(selectedPolygon.node());
 
-            var parameter = "Parameter: "+ key.split("-")[0];
             var value = "Value: " + key.split("-")[1];
             var em5 = "EM5: " + data[key].EM5;
             var em1 = "EM1: " + data[key].EM1;
@@ -271,7 +261,6 @@ function addListener(svg, data, keyText, className, view) {
             var ed1 = "ED1: " + data[key].ED1;
 
             keyText.text("");
-            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(em5);
             keyText.append("tspan").text(em1);
@@ -305,7 +294,6 @@ function addListener(svg, data, keyText, className, view) {
             selectedPolygon.attr("pointer-events", "none");
             svg.node().appendChild(selectedPolygon.node());
 
-            var parameter = "Parameter: "+ key.split("-")[0];
             var value = "Value: " + key.split("-")[1];
             var dpt = "DPT: " + data[key].DPT;
             var dptd = "DPTd: " + data[key].DPTd;
@@ -314,7 +302,6 @@ function addListener(svg, data, keyText, className, view) {
             var dp1d = "DP1d: " + data[key].DP1d;
 
             keyText.text("");
-            // keyText.append("tspan").text(parameter);
             keyText.append("tspan").text(value);
             keyText.append("tspan").text(dpt);
             keyText.append("tspan").text(dptd);
@@ -593,7 +580,6 @@ const StarChart = ({ parameter, view, setView }) => {
                         elementPositions.push({ x: x, y: y });
                     }
 
-                    // Map the values to the range [0, 100] a scaling factor
                     var normalizedValues = elementValues.map(function (value, index) {
                         var scalingFactor = 100;
                         var normalizedValue = Math.log(value * scalingFactor + 1) / Math.log(scalingFactor + 1) * 100;
@@ -608,7 +594,6 @@ const StarChart = ({ parameter, view, setView }) => {
                         ];
                     });
 
-                    // Convert the array of points to a string
                     var polygonPoints = polygonVertices.map(function (point) {
                         return point.join(",");
                     }).join(" ");
@@ -616,7 +601,6 @@ const StarChart = ({ parameter, view, setView }) => {
                     var elementColor = colors[colorIndex % colors.length];
                     colorIndex++;
 
-                    // Append the filled polygon
                     var polygon = svg.append("polygon")
                         .attr("points", polygonPoints)
                         .attr("fill", elementColor)
@@ -624,14 +608,9 @@ const StarChart = ({ parameter, view, setView }) => {
                         .attr("class", "polygon")
                         .attr("data-key", key)
                         .attr("opacity", 0);
-                    // Add animation to the polygon
                     polygon.transition()
                     .duration(500)
                     .attr("opacity", 1);
-                    // Set the duration of the animation in milliseconds
-                    // .attr("points", updatedPolygonPoints) // Change to the new set of points
-                    // .attr("fill", updatedElementColor) // Change to the new fill color
-                    // .attr("stroke", updatedElementColor); // Change to the new stroke color
                 }
             }
 
@@ -651,7 +630,7 @@ const StarChart = ({ parameter, view, setView }) => {
             var totalLegendWidth = columnWidth * numColumns;
 
             var legendTitle = legend.append("text")
-                .attr("x", totalLegendWidth / 2 - columnWidth / 4) // Adjusted x-coordinate
+                .attr("x", totalLegendWidth / 2 - columnWidth / 4)
                 .attr("y", -10)
                 .text("Values")
                 .attr("text-anchor", "middle")
@@ -721,7 +700,7 @@ const StarChart = ({ parameter, view, setView }) => {
                 .data(titleContent)
                 .enter().append("tspan")
                 .attr("x", svgWidth / 3 + 50)
-                .attr("dy", "1.2em") // Adjust this value for line spacing
+                .attr("dy", "1.2em")
                 .text(function(d) { return d; });
 
             title.transition()

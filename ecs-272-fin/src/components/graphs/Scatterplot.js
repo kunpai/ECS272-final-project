@@ -6,29 +6,24 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
 
   useEffect(() => {
     const handleResize = () => {
-      // Remove the existing chart before redrawing
       d3.select(svgRef.current).selectAll('*').remove();
       drawChart();
     };
 
     window.addEventListener('resize', handleResize);
 
-    // Initial chart drawing
     drawChart();
 
-    // Cleanup on component unmount
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [data]);
 
   const drawChart = () => {
-    // Set up the dimensions of the SVG container
     const width = window.innerWidth/(4/3) - 200;
     const height = window.innerHeight/(4/3);
     const margin = { top: 20, right: 20, bottom: 60, left: 40 };
 
-    // Find the extent of your PC1 and PC2 values
     const pc1Extent = d3.extent(data, (d) => d.PC1);
     const pc2Extent = d3.extent(data, (d) => d.PC2);
     const uniqueParameters = [...new Set(data.map((d) => d.parameter))];
@@ -109,9 +104,9 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
 
     const zoom = d3.zoom().scaleExtent([1, 10]).on('zoom', (event) => {
       const { transform } = event;
-      circles.attr('transform', transform); // Update the circles' position with the zoom transformation
-      svg.select('.x-axis').call(xAxis.scale(transform.rescaleX(xScale))); // Update the x-axis
-      svg.select('.y-axis').call(yAxis.scale(transform.rescaleY(yScale))); // Update the y-axis
+      circles.attr('transform', transform);
+      svg.select('.x-axis').call(xAxis.scale(transform.rescaleX(xScale)));
+      svg.select('.y-axis').call(yAxis.scale(transform.rescaleY(yScale)));
     });
 
     svg.call(zoom);
@@ -147,7 +142,6 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
         setView('overview');
     }
 
-    // Add labels for the axes and make them clickable
     const xAxisLabel = svg
       .append('text')
       .attr('transform', `translate(${width / 2},${height + margin.top + 10})`)
@@ -309,7 +303,6 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
             callbackPC(null);
             tooltipVisible = false;
         } else {
-            // Display the appropriate tooltip
             if (axis === 'PC1') {
                 // axisTooltip.html("PC1 is the first principal component")
                 //     .style("left", `${width / 2}px`)
@@ -322,7 +315,6 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
                 callbackPC('PC2');
             }
 
-            // Update the state variables
             currentAxis = axis;
             tooltipVisible = true;
         }

@@ -24,7 +24,6 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
                     .map(d => {
                         const filteredColumns = Object.keys(d)
                             .filter(key => {
-                                // Include the columns you want to keep, e.g., 'Value'
                                 const allowedColumns = [view.split('-')[1]];
                                 return allowedColumns.includes(key);
                             })
@@ -65,7 +64,6 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
                     .map(d => {
                         const filteredColumns = Object.keys(d)
                         .filter(key => {
-                            // Include the columns you want to keep, e.g., 'Value'
                             const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
                             return allowedColumns.includes(key);
                         })
@@ -86,7 +84,6 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
     const goBack = () => {
         const views = view.split("-");
         if (views.length > 1) {
-            // Remove the last element to go back
             views.pop();
             const newView = views.join("-");
             setView(newView);
@@ -103,7 +100,6 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
         .map(d => {
           const filteredColumns = Object.keys(d)
             .filter(key => {
-              // Include the columns you want to keep, e.g., 'Value'
               const allowedColumns = ['Value', view.split('-').slice(-1)[0].toLowerCase()];
               return allowedColumns.includes(key);
             })
@@ -134,10 +130,8 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
     };
 
     useEffect(() => {
-        // Add event listener for window resize
         window.addEventListener('resize', handleResize);
 
-        // Cleanup the event listener when the component unmounts
         return () => {
             window.removeEventListener('resize', handleResize);
         };
