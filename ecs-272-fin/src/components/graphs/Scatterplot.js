@@ -291,27 +291,13 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     let currentAxis = null;
 
     function handleAxisLabelClick(axis) {
-        // axisTooltip.transition()
-        //     .duration(200)
-        //     .style("opacity", 0.9);
-
         if (currentAxis === axis && tooltipVisible) {
-            // If the same axis is clicked and the tooltip is visible, hide it
-            // axisTooltip.transition()
-            //     .duration(500)
-            //     .style("opacity", 0);
             callbackPC(null);
             tooltipVisible = false;
         } else {
             if (axis === 'PC1') {
-                // axisTooltip.html("PC1 is the first principal component")
-                //     .style("left", `${width / 2}px`)
-                //     .style("top", `${height + margin.top + 10}px`);
                 callbackPC('PC1');
             } else {
-                // axisTooltip.html("PC2 is the second principal component")
-                //     .style("left", `${-margin.left + 10}px`)
-                //     .style("top", `${height / 2}px`);
                 callbackPC('PC2');
             }
 
