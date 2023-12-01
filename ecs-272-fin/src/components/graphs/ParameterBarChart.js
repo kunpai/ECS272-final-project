@@ -222,7 +222,7 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
             .attr('y', d => yScale(0))
             .attr('width', xScale.bandwidth())
             .attr('height', 0)
-            .attr('fill', 'steelblue');
+            .attr('fill', d => (d.Value === 'Baseline' ? '#ff4d01' : 'steelblue'));
 
         bars.transition()
             .duration(1000)
