@@ -95,7 +95,7 @@ The data collected from a run of the microbenchmarks is in the form of a JSON fi
 
 ## Visualization
 
-The main visualization is a PCA 2D scatterplot. The scatterplot is a 2D reduction of the 5D data (6 groups of stats) for each microbenchmark. Each axis of the scatterplot is a principal component of the data. Clicking an axis renders a bar chart showing the constituent components that make up the principal component. Clicking the axis again hides the bar chart. It also times out after 10 seconds.
+The main visualization is a PCA 2D scatterplot. The scatterplot is a 2D reduction of the 5D data (5 groups of stats) for each microbenchmark. Each axis of the scatterplot is a principal component of the data. Clicking an axis renders a bar chart showing the constituent components that make up the principal component. Clicking the axis again hides the bar chart. It also times out after 10 seconds.
 
 The scatterplot is colored by the group of parameters and every possible value for each parameter. The scatterplot is interactive, and hovering over a point shows the parameter and value for that point, while also highlighting all the points with the same parameter but different values. Zooming and panning is also enabled to allow for better viewing of the data. The legend is interactive, and can be viewed or hidden by clicking on the "Legend" button. Hovering over a legend item highlights all the points with the same parameter but different values.
 
@@ -105,9 +105,11 @@ The star chart's labels can be clicked, and clicking on them will render a star 
 
 For the view associated with a specific group of microbenchmarks, the star chart also implements a feature where hovering over the label gives more information on what the microbenchmarks in that group do. This is done by showing a tooltip with the description of the microbenchmark, and the tooltip is hidden when the mouse leaves the label, and also has a timeout of 5 seconds as a fallback.
 
-For the view associated with a specific microbenchmark, the star chart is replaced by a bar chart, which shows the particular stat for each value of the parameter for that microbenchmark. The bar chart has a hover effect, where hovering over a bar shows the stat for that bar. All the bars are of one color, since the values of the parameter are on the X-axis. There is also a checkbox below the bar chart, which allows the user to add a bar for the baseline value of that stat for that microbenchmark. This baseline stat is from the actual hardware, and is the value that we are trying to match. The checkbox can add or remove the baseline bar from the bar chart. In case the stat is not available for the baseline, the checkbox is disabled.
+For the view associated with a specific microbenchmark, the star chart is replaced by a bar chart, which shows the particular stat for each value of the parameter for that microbenchmark. The bar chart has a hover effect, where hovering over a bar shows the stat for that bar. All the bars are of one color, since the values of the parameter are on the X-axis. There is also a checkbox below the bar chart, which allows the user to add a bar for the baseline value of that stat for that microbenchmark. This baseline stat is from the actual hardware, and is the value that we are trying to match. The checkbox can add or remove the baseline bar from the bar chart. In case the stat is not available for the baseline, the checkbox is disabled. To differentiate the baseline bar from the other bars, the baseline bar is colored with a different color.
 
 Animations and transitions are used to make the visualization more interactive and responsive. The scatterplot has a transition when the data is changed, and the star chart has a transition when the data is changed, and when the labels are clicked. The bar chart has a transition when the data is changed, and when the baseline bar is added or removed.
+
+The application also has a breadcrumb trail, which shows the path taken to reach the current view. The breadcrumb trail is interactive, and clicking on a breadcrumb takes the user to that view. The breadcrumb trail is also updated when the labels are clicked.
 
 ## Running the Visualization
 

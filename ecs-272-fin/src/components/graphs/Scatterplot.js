@@ -36,9 +36,29 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       '#1f77b4', '#ff7f0e', '#2ca02c'
     ];
 
+    const groupParameters = (parameter) => {
+      if (parameter.includes('branchPred')) {
+        return 'Branch';
+      } else if (parameter.split('.').length === 1) {
+        return 'Core';
+      } else if (parameter.includes('funcUnits[0]') || parameter.includes('funcUnits[1')) {
+        return 'Integer';
+      } else if (parameter.includes('funcUnits[2]')) {
+        return 'Multiplication';
+      } else if (parameter.includes('funcUnits[3]')) {
+        return 'Division';
+      } else if (parameter.includes('funcUnits[6]')) {
+        return 'Load';
+      } else if (parameter.includes('funcUnits[7]')) {
+        return 'Store';
+      } else {
+        return 'Other';
+      }
+    };
+
     const colorScale = d3.scaleOrdinal()
       .range(distinctColors)
-      .domain(uniqueParameters);
+      .domain(data.map((d) => groupParameters(d.parameter)));
 
     const svg = d3
       .select(svgRef.current)
@@ -91,7 +111,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .attr('cx', (d) => xScale(d.PC1))
       .attr('cy', (d) => yScale(d.PC2))
       .attr('r', 0)
-      .attr('fill', (d) => colorScale(d.parameter))
+      .attr('fill', (d) => colorScale(groupParameters(d.parameter)))
       .attr('class', (d) => d.parameter.replace(/\./g, '-').replace(/[^a-zA-Z0-9-_]/g, ''))
       .on('mouseenter', handleMouseEnter)
       .on('mouseleave', handleMouseLeave)
@@ -193,7 +213,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     const legend = svg
       .append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(${width - margin.right - 150}, ${margin.top})`)
+      .attr('transform', `translate(${width - margin.right - 200}, ${margin.top})`)
       .style('opacity', 0)
       .style('display', 'none');
 
@@ -235,15 +255,15 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
       .append('rect')
       .attr('width', 15)
       .attr('height', 15)
-      .attr('fill', (d) => colorScale(d));
+      .attr('fill', (d) => colorScale(groupParameters(d)));
 
     legendItems
       .append('text')
       .attr('x', 20)
       .attr('y', 10)
       .attr('dy', '0.35em')
-      .text((d) => d)
-      .attr('font-size', '9px');
+      .text((d) => groupParameters(d)+ ': ' + d)
+      .attr('font-size', '8px');
 
     function toggleLegend() {
       legendVisible = !legendVisible;
@@ -291,27 +311,13 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
     let currentAxis = null;
 
     function handleAxisLabelClick(axis) {
-        // axisTooltip.transition()
-        //     .duration(200)
-        //     .style("opacity", 0.9);
-
         if (currentAxis === axis && tooltipVisible) {
-            // If the same axis is clicked and the tooltip is visible, hide it
-            // axisTooltip.transition()
-            //     .duration(500)
-            //     .style("opacity", 0);
             callbackPC(null);
             tooltipVisible = false;
         } else {
             if (axis === 'PC1') {
-                // axisTooltip.html("PC1 is the first principal component")
-                //     .style("left", `${width / 2}px`)
-                //     .style("top", `${height + margin.top + 10}px`);
                 callbackPC('PC1');
             } else {
-                // axisTooltip.html("PC2 is the second principal component")
-                //     .style("left", `${-margin.left + 10}px`)
-                //     .style("top", `${height / 2}px`);
                 callbackPC('PC2');
             }
 
