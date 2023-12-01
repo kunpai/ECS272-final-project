@@ -189,7 +189,12 @@ const ParameterBarChart = ({ parameter, view, setView }) => {
             .range([height - margin.bottom, margin.top]);
 
         const xAxis = d3.axisBottom(xScale);
-        const yAxis = d3.axisLeft(yScale).tickFormat(d3.format(".1e"));
+        const yAxis = d3.axisLeft(yScale);
+
+        const maxValue = d3.max(data, d => parseFloat(d[view.split('-').slice(-1)[0].toLowerCase()]));
+        if (maxValue >= 1e6) {
+            yAxis.tickFormat(d3.format(".1e"));
+        }
 
         svg.append('g')
             .attr('transform', `translate(0, ${height - margin.bottom})`)
