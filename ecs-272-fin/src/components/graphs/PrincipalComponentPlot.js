@@ -74,7 +74,7 @@ const BarChart = ({ data }) => {
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text("Effect")
+      .text("Weight")
       .attr("opacity", 0)
       .transition()
       .duration(500)

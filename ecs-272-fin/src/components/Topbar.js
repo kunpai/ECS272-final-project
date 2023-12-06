@@ -32,7 +32,6 @@ export default function Topbar() {
                         <Offcanvas.Body>
                             <Nav className="justify-content-end flex-grow-1 pe-3">
                                 <Nav.Link href="/" as={Link} className="main-text-regular">Home</Nav.Link>
-                                <Nav.Link href="/about" as={Link} className="main-text-regular">About</Nav.Link>
                             </Nav>
                         </Offcanvas.Body>
                     </Navbar.Offcanvas>

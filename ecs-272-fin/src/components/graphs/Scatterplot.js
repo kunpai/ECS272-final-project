@@ -326,7 +326,7 @@ const ScatterPlot = ({ data, callbackPC, setParameter, setView }) => {
         }
         setTimeout(function () {
             callbackPC(null);
-        }, 15000);
+        }, 20000);
     }
     };
 
