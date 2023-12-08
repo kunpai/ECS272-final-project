@@ -528,7 +528,7 @@ const StarChart = ({ parameter, view, setView }) => {
                                 microbenchTooltip.transition()
                                     .duration(200)
                                     .style("opacity", 0);
-                            }, 5000);
+                            }, 10000);
                     }
                 })
                 .on("mouseout", function () {
