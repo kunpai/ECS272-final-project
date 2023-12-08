@@ -489,7 +489,7 @@ const StarChart = ({ parameter, view, setView }) => {
                 .attr("y", y2)
                 .attr("dx", x2 == centerX ? 20 : (x2 > centerX ? 10 : -10))
                 .attr("dy", y2 == centerY ? 10 : (y2 < centerY ? -10 : 20))
-                .attr("font-size", "12px")
+                .attr("font-size", "11px")
                 .text(function () {
                     return elements[i].split("_").map(function (word) {
                         return word.charAt(0).toUpperCase() + word.slice(1);
